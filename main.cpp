@@ -5,29 +5,37 @@
 #include "box.hpp"
 using namespace std;
 
-//schermata iniziale
-void pregame(){
+//inizializzaz. screen
+void initialize(){
     initscr(); //inizialzza lo screen e la memoria
     refresh(); //refresha lo screen per renderlo compatibile con ciò che è in memoria
     noecho(); //impedisce all'user di typare
     curs_set(false); //nasconde cursore
-    move(15,52);//muove il cursore a posiz y,x
-    printw("THE GAME\n"); //stampa stringa
-    move(16,45);
-    printw("press enter to start\n");
+}
+
+//scheramata iniziale
+void pregame(class BOX box, int y_scr, int x_scr){
+    WINDOW* fin=box.create_box();
+    mvwprintw(fin,y_scr/4,(x_scr/4)-3,"THE GAME");
+    mvwprintw(fin,(y_scr/4)+1,(x_scr/4)-10,"press a key to start");
+    refresh();
+    wrefresh(fin);
     getch();
     clear();
 }
 
-
 int main(int argc, char** argv){
-    pregame();
+    initialize();
+    int y, x;
+    getmaxyx(stdscr,y,x);//grandezze screen
+
+    BOX pre_box(y/2,x/2,y/4,x/4);
+    pregame(pre_box,y,x);
 
     move(5,5);
     refresh();
 
-    int y, x;
-    getmaxyx(stdscr,y,x);//grandezze screen
+
 
     BOX main_box(30,120,0,0);//height,width,strt_y,start_x
 
@@ -40,7 +48,7 @@ int main(int argc, char** argv){
 
     int cx=menu.choice();
     
-    MAP map1(30,120,0,0,false,true,true,31,40,81,90);
+    MAP map1(30,120,y/6,x/6,true,true,true,false,true,true,31,40,81,90);
 
     map1.create_map();
 

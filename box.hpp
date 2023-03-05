@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstring>
+#include <ctime>
 #include <ncurses.h>
 using namespace std;
 
@@ -32,17 +33,21 @@ class MENU : public BOX{
 
 class MAP: public BOX{
     protected:
-    bool ladder_on, holes_on, two_holes;
-    int x1_hole, x2_hole, x3_hole, x4_hole;
+    bool ladder_on, holes_on, two_holes, two_ladders, cloud, day;
+    int x1_hole_start, x1_hole_finish, x2_hole_start, x2_hole_finish;
     public:
-    MAP(int h, int w, int y,int x, bool l_on, bool h_on, bool h_2, int h_p1, int h_p2, int h_p3, int h_p4):BOX(h, w, y, x){
+    MAP(int h, int w, int y,int x, bool l_on, bool h_on, 
+        bool h_2, bool l_2, bool c, bool d, int h_p1, int h_p2, int h_p3, int h_p4):BOX(h, w, y, x){
         ladder_on=l_on;
         holes_on=h_on;
         two_holes=h_2;
-        x1_hole=h_p1;
-        x2_hole=h_p2;
-        x3_hole=h_p3;
-        x4_hole=h_p4;
+        two_ladders=l_2;
+        cloud=c;
+        day=d;
+        x1_hole_start=h_p1;
+        x1_hole_finish=h_p2;
+        x2_hole_start=h_p3;
+        x2_hole_finish=h_p4;
     }
     WINDOW* create_map();
 };
