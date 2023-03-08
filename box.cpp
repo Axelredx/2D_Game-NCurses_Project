@@ -73,18 +73,24 @@ WINDOW* MAP::create_map(){
     mvwprintw(fin,22,1,"[]");
     mvwprintw(fin,22,width-3,"()");
     //buchi nella mappa
-    if(holes_on==true){
-        for(int i=0;i<width;i++){
-            for(int j=0;j<height;j++){
-                if(j>=23){
+    for(int i=0;i<width;i++){
+        for(int j=0;j<height;j++){
+            if(j>=23){
+                if(holes_on==true){
                     if(i<x1_hole_start || i>x1_hole_finish)
-                        if(two_holes==true)
+                        if(two_holes==true){
                             if(i<x2_hole_start || i>x2_hole_finish)
                                 mvwprintw(fin,j,i,"#");
+                            }else{
+                                mvwprintw(fin,j,i,"#");
+                            }
+                }else{
+                    mvwprintw(fin,j,i,"#");
                 }
             }
         }
     }
+    
     //scale
     if(ladder_on==true){
         for(int i=0;i<width;i++){
@@ -92,11 +98,15 @@ WINDOW* MAP::create_map(){
                 if(two_ladders==true){
                     if(i==x1_hole_start || i==x2_hole_start){
                         if(j>=18 && j<23){
-                            mvwprintw(fin,j,i-2,"|");
-                            mvwprintw(fin,j,i-1,"-");
-                            mvwprintw(fin,j,i,"|");
+                            mvwprintw(fin,j,i-3,"|");
+                            mvwprintw(fin,j,i-2,"-");
+                            mvwprintw(fin,j,i-1,"|");
+
+                            mvwprintw(fin,j,i+10,"|");
+                            mvwprintw(fin,j,i+11,"-");
+                            mvwprintw(fin,j,i+12,"|");
                         }
-                        mvwprintw(fin,17,i,"###");
+                        mvwprintw(fin,18,i,"##########");
                     }
                 }else{
                     if(i==x1_hole_start){
@@ -104,8 +114,12 @@ WINDOW* MAP::create_map(){
                             mvwprintw(fin,j,i-3,"|");
                             mvwprintw(fin,j,i-2,"-");
                             mvwprintw(fin,j,i-1,"|");
+
+                            mvwprintw(fin,j,i+10,"|");
+                            mvwprintw(fin,j,i+11,"-");
+                            mvwprintw(fin,j,i+12,"|");
                         }
-                        mvwprintw(fin,18,i,"#####");
+                        mvwprintw(fin,18,i,"##########");
                     }
                 }
             }
@@ -133,12 +147,12 @@ WINDOW* MAP::create_map(){
 
     if(day==true){
         //sole
-        mvwprintw(fin,2,102,">X!!X<");
-        mvwprintw(fin,3,100,">XX||||XX<");
-        mvwprintw(fin,4,99,">XXX||||XXX<");
-        mvwprintw(fin,5,99,">XXX||||XXX<");
-        mvwprintw(fin,6,100,">XX||||XX<");
-        mvwprintw(fin,7,102,">X||X<");
+        mvwprintw(fin,2,102,">ççç<");
+        mvwprintw(fin,3,100,">ççççççç<");
+        mvwprintw(fin,4,99,">ççççççççç<");
+        mvwprintw(fin,5,99,">ççççççççç<");
+        mvwprintw(fin,6,100,">ççççççç<");
+        mvwprintw(fin,7,102,">ççç<");
     }else{
         //luna
         mvwprintw(fin,2,100,"+,");
@@ -156,4 +170,3 @@ WINDOW* MAP::create_map(){
     wrefresh(fin);
     return fin;
 }
-
