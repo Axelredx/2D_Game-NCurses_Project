@@ -61,11 +61,12 @@ int MENU::choice(){
                     return(input_choice);
                 } 
         }   
-        else
+        else{
             mvwprintw(fin,1,1,tag2);
             mvwprintw(fin,4,1,tag3);
-            mvwprintw(fin,7,1,tag4);              
-        }
+            mvwprintw(fin,7,1,tag4);
+        }              
+    }
 }
 
 WINDOW* MAP::create_map(){
@@ -98,28 +99,32 @@ WINDOW* MAP::create_map(){
                 if(two_ladders==true){
                     if(i==x1_hole_start || i==x2_hole_start){
                         if(j>=18 && j<23){
-                            mvwprintw(fin,j,i-3,"|");
+                            mvwprintw(fin,j-1,i-3,"|");
                             mvwprintw(fin,j,i-2,"-");
-                            mvwprintw(fin,j,i-1,"|");
+                            mvwprintw(fin,j-1,i-1,"|");
 
-                            mvwprintw(fin,j,i+10,"|");
+                            mvwprintw(fin,j-1,i+10,"|");
                             mvwprintw(fin,j,i+11,"-");
-                            mvwprintw(fin,j,i+12,"|");
+                            mvwprintw(fin,j-1,i+12,"|");
                         }
-                        mvwprintw(fin,18,i,"##########");
+                        mvwprintw(fin,17,i,"##########");
+                        mvwprintw(fin,17,i-2,"-");
+                        mvwprintw(fin,17,i+11,"-");
                     }
                 }else{
                     if(i==x1_hole_start){
                         if(j>=18 && j<23){
-                            mvwprintw(fin,j,i-3,"|");
+                            mvwprintw(fin,j-1,i-3,"|");
                             mvwprintw(fin,j,i-2,"-");
-                            mvwprintw(fin,j,i-1,"|");
+                            mvwprintw(fin,j-1,i-1,"|");
 
-                            mvwprintw(fin,j,i+10,"|");
+                            mvwprintw(fin,j-1,i+10,"|");
                             mvwprintw(fin,j,i+11,"-");
-                            mvwprintw(fin,j,i+12,"|");
+                            mvwprintw(fin,j-1,i+12,"|");
                         }
-                        mvwprintw(fin,18,i,"##########");
+                        mvwprintw(fin,17,i,"##########");
+                        mvwprintw(fin,17,i-2,"-");
+                        mvwprintw(fin,17,i+11,"-");
                     }
                 }
             }
