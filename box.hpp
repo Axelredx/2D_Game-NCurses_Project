@@ -36,8 +36,9 @@ class MAP: public BOX{
     bool ladder_on, holes_on, two_holes, two_ladders, cloud, day;
     int x1_hole_start, x1_hole_finish, x2_hole_start, x2_hole_finish;
     public:
+    int map_seed;
     MAP(int h, int w, int y,int x, bool l_on, bool h_on, 
-        bool h_2, bool l_2, bool c, bool d, int h_p1, int h_p2, int h_p3, int h_p4):BOX(h, w, y, x){
+        bool h_2, bool l_2, bool c, bool d, int h_p1, int h_p2, int h_p3, int h_p4, int m_s):BOX(h, w, y, x){
         ladder_on=l_on;
         holes_on=h_on;
         two_holes=h_2;
@@ -48,6 +49,7 @@ class MAP: public BOX{
         x1_hole_finish=h_p2;
         x2_hole_start=h_p3;
         x2_hole_finish=h_p4;
+        map_seed=m_s;
     }
     WINDOW* create_map();
 };
