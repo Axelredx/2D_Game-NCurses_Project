@@ -18,55 +18,37 @@ WINDOW* BOX::modify_box(char tag[]){
 
 int MENU::choice(){
     WINDOW* fin= BOX::modify_box(tag);
-    mvwprintw(fin,1,1,tag2);
-    mvwprintw(fin,4,1,tag3);
-    mvwprintw(fin,7,1,tag4);
-    int input_choice=-1;
+    keypad(fin,true);
+    string choice[3]{tag2,tag3,tag4};
+    int user_typing, h_light=0, exit_value;
+    bool found=false;
 
-    char c;
-    while(c=wgetch(fin)){
-        if(c=='1'){
-                wattron(fin, A_STANDOUT);//evidenzia
-                mvwprintw(fin,1,1,tag2); 
-                wattroff(fin, A_STANDOUT);//toglie la selez
-                mvwprintw(fin,7,1,tag4); 
-                mvwprintw(fin,4,1,tag3);
-                if(wgetch(fin)==' '){
-                    input_choice=1;            
-                    clear();
-                    return(input_choice);
-                }
+    while(1 && !found){
+        for(int i=0;i<3;i++){
+            if(i==h_light){
+                wattron(fin,A_REVERSE);
+            }
+            mvwprintw(fin,i+1,1,choice[i].c_str());
+            wattroff(fin,A_REVERSE);
         }
-        else if(c=='2'){
-                wattron(fin, A_STANDOUT);
-                mvwprintw(fin,4,1,tag3); 
-                wattroff(fin, A_STANDOUT);
-                mvwprintw(fin,7,1,tag4); 
-                mvwprintw(fin,1,1,tag2);
-                if(wgetch(fin)==' '){
-                    input_choice=2;
-                    clear();
-                    return(input_choice);
-                }
+        user_typing=wgetch(fin);
+
+        if(user_typing==KEY_UP){
+            h_light--;
+            if(h_light==-1)
+                h_light=0;    
+        }else if(user_typing==KEY_DOWN){
+            h_light++;
+            if(h_light==3)
+                h_light=2;
         }
-        else if(c=='3'){
-                wattron(fin, A_STANDOUT);
-                mvwprintw(fin,7,1,tag4); 
-                wattroff(fin, A_STANDOUT);
-                mvwprintw(fin,1,1,tag2);
-                mvwprintw(fin,4,1,tag3);
-                if(wgetch(fin)==' '){
-                    input_choice=3;
-                    clear();
-                    return(input_choice);
-                } 
-        }   
-        else{
-            mvwprintw(fin,1,1,tag2);
-            mvwprintw(fin,4,1,tag3);
-            mvwprintw(fin,7,1,tag4);
-        }              
+        if(user_typing=='k'){
+            found=true;
+            clear();
+            exit_value=h_light+1;
+        }
     }
+    return exit_value;
 }
 
 WINDOW* MAP::create_map(){
@@ -134,10 +116,10 @@ WINDOW* MAP::create_map(){
     //decorations
     if(cloud==true){
         //nuvole
-        mvwprintw(fin,3,4,".°(||)°.");
-        mvwprintw(fin,4,3,"((((||))))");
-        mvwprintw(fin,5,3,"((((||))))");
-        mvwprintw(fin,6,4,"'°(||)°'");
+        mvwprintw(fin,3,6,".°(||)°.");
+        mvwprintw(fin,4,5,"((((||))))");
+        mvwprintw(fin,5,5,"((((||))))");
+        mvwprintw(fin,6,6,"'°(||)°'");
 
         mvwprintw(fin,4,33,".°(||)°.");
         mvwprintw(fin,5,32,"((((||))))");

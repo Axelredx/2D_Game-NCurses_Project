@@ -6,7 +6,7 @@
 #include "box.hpp"
 #include "player.hpp"
 using namespace std;
-using namespace std::this_thread;
+typedef void * (*THREADFUNCPTR)(void *);
 
 //inizializzaz. screen
 void initialize(){
@@ -25,6 +25,19 @@ void pregame(class BOX box, int y_scr, int x_scr){
     wrefresh(fin);
     getch();
     clear();
+}
+
+void death_screen(class BOX box, int y_scr, int x_scr, class MAP map1, class MAP map2, class MAP map3, class MAP map4,
+                       class MAP map5, class MAP map6, class MAP map7, class MAP map8,
+                       class MAP map9, class MAP map10, int seed){
+    WINDOW* fin=box.create_box();
+    mvwprintw(fin,y_scr/4,(x_scr/4)-3,"YOU DIED");
+    mvwprintw(fin,(y_scr/4)+1,(x_scr/4)-10," press a key to exit");
+    refresh();
+    wrefresh(fin);
+    getch();
+    clear();
+    return;
 }
 
 //genera un seed
@@ -81,16 +94,43 @@ WINDOW* map_generatior(class MAP map1, class MAP map2, class MAP map3, class MAP
             return map10.create_map();
 }
 
-void game_flow(int y_scr, int x_scr, WINDOW* map, bool next_lvl){
-    player * p = new player(map, 15, 4, 'P');		//(finestra, y da cui il personagio spawna, 
-                                                    //x da cui il personaggio spawna, icona del personaggio)
+void game_flow(int y_scr, int x_scr, WINDOW* map, bool next_lvl, class BOX box,
+                class MAP map1, class MAP map2, class MAP map3, class MAP map4,
+                class MAP map5, class MAP map6, class MAP map7, class MAP map8,
+                class MAP map9, class MAP map10, int seed){
+
+    player * p = new player(map, 15, 4, 'P');		
+        //(finestra, y da cui il personagio spawna, 
+        //x da cui il personaggio spawna, icona del personaggio)
+
+    //Inizializzazione del thread giocatore
+	pthread_t playerthread;
 	do{
-		p->display();
+		//Creazione del thread
+		pthread_create(&playerthread, NULL, (THREADFUNCPTR) &player::display, p);
+		//Aspetta che il thread finisca di elaborare
+		pthread_join(playerthread, NULL);
+        //refresh mappa
 		wrefresh(map);
         //aggiungere parametro x capire se player ha raggiunto fine lvl,
         // allora passare al prossimo
         
-	}while(p->move()!=27); //aggiungere parametro per morte
+	}while(p->move()!=27 && p->life!=0); 
+
+    //morte
+    if(p->life==0){
+        clear();
+        refresh();
+        death_screen(box,y_scr,x_scr,map1,map2,map3,map4,map5,map6,map7,
+                        map8,map9,map10,seed);
+        endwin();
+        return;
+    }
+
+    int prova;
+	//Guardare il file "player.cpp" per sapere l'utilizzo di questa funzione
+	//POTREBBE ESSERE MOLTO UTILE SORPATUTTO PER LUCA
+	prova=p->playeroutput(5);
 
     char v1[20], v2[20], v3[20], v4[20];
     strcpy(v1,"Menu");
@@ -99,9 +139,11 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, bool next_lvl){
     strcpy(v4,"Save and exit");
 
     MENU menu(y_scr/2,x_scr/2,y_scr/4,x_scr/4,v1,v2,v3,v4);
+
     int cx=menu.choice();
     if(cx==1){
-        game_flow(y_scr,x_scr,map,true);
+        game_flow(y_scr,x_scr,map,true,box,map1,map2,map3,map4,map5,
+                    map6,map7,map8,map9,map10,seed);
     }else if(cx==2){
         //accesso al market
     }
@@ -146,13 +188,15 @@ int main(int argc, char** argv){
         return 0;
     }else if(c==1){
         int seed_generated=map_randomizer(map1,map2,map3,map4,map5,map6,map7,map8,map9,map10);
-        WINDOW* map_used=map_generatior(map1,map2,map3,map4,map5,map6,map7,map8,map9,map10,seed_generated);
-        game_flow(y_scr,x_scr,map_used,true);
-    }
-    
-    main_box.create_box();
 
-    getch();
+        WINDOW* map_used=map_generatior(map1,map2,map3,map4,map5,map6,
+                                        map7,map8,map9,map10,seed_generated);
+
+        game_flow(y_scr,x_scr,map_used,true,pre_box,map1,map2,map3,map4,map5,map6,map7,
+                    map8,map9,map10,seed_generated);
+    }else{
+        main_box.create_box();
+    }
     endwin(); //deallocaz. memoria
     return 0;
 }
