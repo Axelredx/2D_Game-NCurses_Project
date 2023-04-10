@@ -116,10 +116,10 @@ WINDOW* MAP::create_map(){
     //decorations
     if(cloud==true){
         //nuvole
-        mvwprintw(fin,3,6,".°(||)°.");
-        mvwprintw(fin,4,5,"((((||))))");
-        mvwprintw(fin,5,5,"((((||))))");
-        mvwprintw(fin,6,6,"'°(||)°'");
+        mvwprintw(fin,3,7,".°(||)°.");
+        mvwprintw(fin,4,6,"((((||))))");
+        mvwprintw(fin,5,6,"((((||))))");
+        mvwprintw(fin,6,7,"'°(||)°'");
 
         mvwprintw(fin,4,33,".°(||)°.");
         mvwprintw(fin,5,32,"((((||))))");
@@ -150,6 +150,8 @@ WINDOW* MAP::create_map(){
         mvwprintw(fin,7,100,";]}}'");
         mvwprintw(fin,8,99,"+**");
     } 
+
+
 
 
     refresh();

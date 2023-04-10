@@ -1,8 +1,9 @@
-
+//aggiorna la funzione di spawn per leggere eventuali salvataggi; se presenti, passa x ed y per lo spawn altrimenti default
+//nella funzione che crea il player, tieni conto della vita nei salvataggi
 #include "player.hpp"
 
 //Costruttore della classe
-player::player(WINDOW * win, int y, int x, char c){
+player::player(WINDOW * win, int y, int x, char c, int m, int l){
 	curwin = win;
 	yLoc=y;
 	xLoc = x;
@@ -18,10 +19,14 @@ player::player(WINDOW * win, int y, int x, char c){
 	character=c;
 
 	//Vita del giocatore
-	life=3;
+	life=l;
 
-	//Soldi del giocatore (al momento inutilizzata)
-	money=0;
+	//Soldi del giocatore 
+	money=m;
+
+	//prezzo upgrade della vita e del salto
+	healthPrice=20;
+	jumpPrice=20;
 
 	//Indica le y del proiettile
 	projy=y;
@@ -51,6 +56,10 @@ bool player::isterrain(char t){
 		return true;
 	else
 		return false;
+}
+
+int player::getLife(){
+	return life;
 }
 
 //Controlla se ci sono scale, se si, controlla la loro direzione e fa salire il giocatore

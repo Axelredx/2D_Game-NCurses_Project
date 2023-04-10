@@ -1,17 +1,17 @@
 #include <iostream>
-#include<ncurses.h>
-#include<unistd.h>
+#include <ncurses.h>
+#include <unistd.h>
 
 class player {
     protected:
-        int xLoc, yLoc, xMax, yMax, originx, originy, projx, projy, money;
+        int xLoc, yLoc, xMax, yMax, originx, originy, projx, projy;
         bool s, dir, dirlock, j;
         char character;
         WINDOW * curwin;
 
     public:
-        int life;
-        player(WINDOW * win, int y, int x, char c);
+        int life, money, salto, healthPrice, jumpPrice;
+        player(WINDOW * win, int y, int x, char c, int m, int l);
 
         bool isterrain(char t);
         void mvup();
@@ -28,4 +28,5 @@ class player {
         void gravity();
         void shoot();
         int playeroutput(int input);
+        int getLife();
 };
