@@ -235,16 +235,38 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
 
     int cx=menu.choice();
     if(cx==1){
-        game_flow(y_scr,x_scr,map,box,map1,map2,map3,map4,map5,
-                    map6,map7,map8,map9,map10,seed);
+            clear();
+            refresh();
+            WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
+                                            map7,map8,map9,map10,seed,false);
+            game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
+                        map6,map7,map8,map9,map10,seed);
+            endwin();
+            return;
     }else if(cx==2){
         //accesso al market
        int mx=market.choice();
-        if(mx==1)
+        if(mx==1){
             buyHealth(p);
-        else if(mx==2)
+            clear();
+            refresh();
+            WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
+                                            map7,map8,map9,map10,seed,false);
+            game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
+                        map6,map7,map8,map9,map10,seed);
+            endwin();
+            return;
+        }else if(mx==2){
             buyJumpboost(p);
-        else{
+            clear();
+            refresh();
+            WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
+                                            map7,map8,map9,map10,seed,false);
+            game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
+                        map6,map7,map8,map9,map10,seed);
+            endwin();
+            return;
+        }else{
             clear();
             refresh();
             WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
