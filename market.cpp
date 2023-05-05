@@ -1,10 +1,11 @@
 #include "market.hpp"
 
-bool checkCurrency(int price, player* player){
-    if(price < player->money)
-        return false;
-    else 
-        return true;
+bool checkCurrency(int price, player* P1){
+    if(price > P1->money)
+    {
+    	return false;
+    }else
+    	return true;
 }
 
 void buyHealth(player* player){
@@ -16,8 +17,8 @@ void buyHealth(player* player){
 }
 void buyJumpboost(player* player){
     if(checkCurrency(player->jumpPrice, player)){
-        player->salto=player->salto+1;
-        player->salto=player->salto-player->healthPrice;
+        (player->salto) ++;
+        player->money=player->money-player->jumpPrice;
         player->jumpPrice=player->jumpPrice+10;
     }
 }
