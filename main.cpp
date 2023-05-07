@@ -152,7 +152,7 @@ WINDOW* map_generator(class MAP map1, class MAP map2, class MAP map3, class MAP 
 void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 class MAP map1, class MAP map2, class MAP map3, class MAP map4,
                 class MAP map5, class MAP map6, class MAP map7, class MAP map8,
-                class MAP map9, class MAP map10, int seed){
+                class MAP map9, class MAP map10, int seed, bool new_lvl){
     int player_x, player_y, money, life;
 
 	//FOLLOWING: default values for creating player-class items
@@ -168,78 +168,80 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
 	 * in caso in cui il dato non venisse ritrovato, ritorna un messaggio di errore e ripristina i valori predefiniti per quel dato
 	 */
 
-	ifstream savegame;
-	string lel, dump;
-	savegame.open("savegame.txt");
+	if(new_lvl==false){
+        ifstream savegame;
+	    string lel, dump;
+	    savegame.open("savegame.txt");
 
-	if(savegame.is_open())
-	{
-		getline(savegame, lel, '#');
-		if(lel.compare("Y_loc")==0)
-		{
-			getline(savegame, lel,'\n');
-			player_y = stoi(lel);	//NOTE: stoi(<string>) converts a string to int
-		}else
-		{
-			clear();
-			mvprintw((y_scr/2)-5, (x_scr/2)-2, "error in locating Y_loc in savedata");
-			mvprintw((y_scr/2)-4, (x_scr/2)-2, "resorting to default value");
-			refresh();
-			getch();
-			getline(savegame, dump);	//goes to next line without saving
+        if(savegame.is_open())
+        {   
+            getline(savegame, lel, '#');
+            if(lel.compare("Y_loc")==0)
+            {
+                getline(savegame, lel,'\n');
+                player_y = stoi(lel);	//NOTE: stoi(<string>) converts a string to int
+            }else
+            {
+                clear();
+                mvprintw((y_scr/2)-5, (x_scr/2)-2, "error in locating Y_loc in savedata");
+                mvprintw((y_scr/2)-4, (x_scr/2)-2, "resorting to default value");
+                refresh();
+                getch();
+                getline(savegame, dump);	//goes to next line without saving
 
-		}
+            }
 
-		getline(savegame, lel, '#');
-		if(lel.compare("X_loc")==0)
-		{
-			getline(savegame, lel,'\n');
-			player_x = stoi(lel);	//NOTE: stoi(<string>) converts a string to int
-		}else
-		{
-			clear();
-			mvprintw((y_scr/2)-5, (x_scr/2)-2, "error in locating X_loc in savedata");
-			mvprintw((y_scr/2)-4, (x_scr/2)-2, "resorting to default value");
-			refresh();
-			getch();
-			getline(savegame, dump);
-		}
+            getline(savegame, lel, '#');
+            if(lel.compare("X_loc")==0)
+            {
+                getline(savegame, lel,'\n');
+                player_x = stoi(lel);	//NOTE: stoi(<string>) converts a string to int
+            }else
+            {
+                clear();
+                mvprintw((y_scr/2)-5, (x_scr/2)-2, "error in locating X_loc in savedata");
+                mvprintw((y_scr/2)-4, (x_scr/2)-2, "resorting to default value");
+                refresh();
+                getch();
+                getline(savegame, dump);
+            }
 
-		getline(savegame, lel, '#');		//check for saving of player health
-		if(lel.compare("life")==0)
-		{
-			getline(savegame, lel, '\n');
-			life=stoi(lel);
-		}else
-		{
-			clear();
-			mvprintw((y_scr/2)-5, (x_scr/2)-2, "error in locating player health");
-			mvprintw((y_scr/2)-4, (x_scr/2)-2, "resorting to default value");
-			refresh();
-			getch();
-			getline(savegame, dump);
-		}
-
-
-		getline(savegame, lel, '#');		//check for saving of player money
-		if(lel.compare("credits")==0)
-		{
-			getline(savegame, lel, '\n');
-			money=stoi(lel);
-		}
-
-		getline(savegame, lel, '#');		//check for jumpHeight
-		if(lel.compare("jumpH")==0)
-		{
-			getline(savegame, lel, '\n');
-			saltoH=stoi(lel);
-		}
+            getline(savegame, lel, '#');		//check for saving of player health
+            if(lel.compare("life")==0)
+            {
+                getline(savegame, lel, '\n');
+                life=stoi(lel);
+            }else
+            {
+                clear();
+                mvprintw((y_scr/2)-5, (x_scr/2)-2, "error in locating player health");
+                mvprintw((y_scr/2)-4, (x_scr/2)-2, "resorting to default value");
+                refresh();
+                getch();
+                getline(savegame, dump);
+            }
 
 
+            getline(savegame, lel, '#');		//check for saving of player money
+            if(lel.compare("credits")==0)
+            {
+                getline(savegame, lel, '\n');
+                money=stoi(lel);
+            }
 
-		savegame.close();
+            getline(savegame, lel, '#');		//check for jumpHeight
+            if(lel.compare("jumpH")==0)
+            {
+                getline(savegame, lel, '\n');
+                saltoH=stoi(lel);
+            }
 
-	}
+
+
+            savegame.close();
+
+	    }
+    }
 
     player * p = new player(map, player_y, player_x, 'P', money, life);
         //(finestra, y da cui il personagio spawna,
@@ -275,7 +277,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
         WINDOW* new_map = map_generator(map1,map2,map3,map4,map5,map6,
                                         map7,map8,map9,map10,seed_generated,true);
         game_flow(y_scr,x_scr,new_map,box,map1,map2,map3,map4,map5,
-                    map6,map7,map8,map9,map10,seed_generated);
+                    map6,map7,map8,map9,map10,seed_generated,true);
         endwin();
         return;
     }
@@ -334,7 +336,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
                                                 map7,map8,map9,map10,seed,false);
                 game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
-                            map6,map7,map8,map9,map10,seed);
+                            map6,map7,map8,map9,map10,seed,false);
                 endwin();
                 return;
         }else if(cx==2){
@@ -365,7 +367,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
                                                 map7,map8,map9,map10,seed,false);
                 game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
-                            map6,map7,map8,map9,map10,seed);
+                            map6,map7,map8,map9,map10,seed,false);
                 endwin();
                 return;
             }else if(mx==2){
@@ -393,7 +395,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
                                                 map7,map8,map9,map10,seed,false);
                 game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
-                            map6,map7,map8,map9,map10,seed);
+                            map6,map7,map8,map9,map10,seed,false);
                 endwin();
                 return;
             }else{
@@ -426,7 +428,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
                                                 map7,map8,map9,map10,seed,false);
                 game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
-                            map6,map7,map8,map9,map10,seed);
+                            map6,map7,map8,map9,map10,seed,false);
                 endwin();
                 return;
             }
@@ -520,7 +522,7 @@ int main(int argc, char** argv){
                                         map7,map8,map9,map10,seed_generated,false);
 
         game_flow(y_scr,x_scr,map_used,pre_box,map1,map2,map3,map4,map5,map6,map7,
-                    map8,map9,map10,seed_generated);
+                    map8,map9,map10,seed_generated,false);
     }else{
     	clear();
     	mvprintw(0, 0, "Can't access yet! Press a key to start a new game");
@@ -533,7 +535,7 @@ int main(int argc, char** argv){
                                         map7,map8,map9,map10,seed_generated,false);
 
         game_flow(y_scr,x_scr,map_used,pre_box,map1,map2,map3,map4,map5,map6,map7,
-                    map8,map9,map10,seed_generated);
+                    map8,map9,map10,seed_generated,false);
     }
     endwin(); //deallocaz. memoria
     return 0;
