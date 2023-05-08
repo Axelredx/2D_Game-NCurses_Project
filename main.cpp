@@ -242,6 +242,8 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
 
 	    }
     
+    //previene il riallocamento errato del player all'avanzamento del livello se presente il 
+    //saveFile
     if(new_lvl==false){
         player_x=4;
 	    player_y=22;
