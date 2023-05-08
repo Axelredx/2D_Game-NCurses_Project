@@ -168,7 +168,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
 	 * in caso in cui il dato non venisse ritrovato, ritorna un messaggio di errore e ripristina i valori predefiniti per quel dato
 	 */
 
-	if(new_lvl==false){
+	
         ifstream savegame;
 	    string lel, dump;
 	    savegame.open("savegame.txt");
@@ -241,6 +241,10 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
             savegame.close();
 
 	    }
+    
+    if(new_lvl==false){
+        player_x=4;
+	    player_y=22;
     }
 
     player * p = new player(map, player_y, player_x, 'P', money, life);
@@ -336,7 +340,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
                                                 map7,map8,map9,map10,seed,false);
                 game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
-                            map6,map7,map8,map9,map10,seed,false);
+                            map6,map7,map8,map9,map10,seed,true);
                 endwin();
                 return;
         }else if(cx==2){
@@ -367,7 +371,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
                                                 map7,map8,map9,map10,seed,false);
                 game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
-                            map6,map7,map8,map9,map10,seed,false);
+                            map6,map7,map8,map9,map10,seed,true);
                 endwin();
                 return;
             }else if(mx==2){
@@ -395,7 +399,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
                                                 map7,map8,map9,map10,seed,false);
                 game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
-                            map6,map7,map8,map9,map10,seed,false);
+                            map6,map7,map8,map9,map10,seed,true);
                 endwin();
                 return;
             }else{
@@ -428,7 +432,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
                                                 map7,map8,map9,map10,seed,false);
                 game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
-                            map6,map7,map8,map9,map10,seed,false);
+                            map6,map7,map8,map9,map10,seed,true);
                 endwin();
                 return;
             }
@@ -522,7 +526,7 @@ int main(int argc, char** argv){
                                         map7,map8,map9,map10,seed_generated,false);
 
         game_flow(y_scr,x_scr,map_used,pre_box,map1,map2,map3,map4,map5,map6,map7,
-                    map8,map9,map10,seed_generated,false);
+                    map8,map9,map10,seed_generated,true);
     }else{
     	clear();
     	mvprintw(0, 0, "Can't access yet! Press a key to start a new game");
@@ -535,7 +539,7 @@ int main(int argc, char** argv){
                                         map7,map8,map9,map10,seed_generated,false);
 
         game_flow(y_scr,x_scr,map_used,pre_box,map1,map2,map3,map4,map5,map6,map7,
-                    map8,map9,map10,seed_generated,false);
+                    map8,map9,map10,seed_generated,true);
     }
     endwin(); //deallocaz. memoria
     return 0;
