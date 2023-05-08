@@ -13,30 +13,6 @@
 		 * Se trovate modo di risolvere questi bug, ditemelo e modificherò la classe!
 		 */
 
-//Costruttore della classe
-basicenemy::basicenemy(WINDOW * win, int y, int x, int l, char e){
-	curwin=win;
-	yLoc=y;
-	xLoc=x;
-
-	//Vita del nemico
-	life=l;
-	enemy=e;
-
-	//Indica se si sta sparando un proiettile
-	s=false;
-
-	//Coordinate x e y del proiettile
-	projx=0;
-	projy=0;
-
-	getmaxyx(curwin, yMax, xMax);
-	dirlock=0;
-
-	//setto rand
-	srand(time(0));
-}
-
 //Questo metodo serve a controllare se è presente un giocatore a una distanza massima di nove blocchi dal nemico
 int basicenemy::playerfinder(){
 	if(mvwinch(curwin, yLoc, xLoc-1)=='P' || mvwinch(curwin, yLoc, xLoc-2)=='P' || mvwinch(curwin, yLoc, xLoc-3)=='P'
@@ -54,6 +30,8 @@ int basicenemy::playerfinder(){
 //mvright e mvleft muovono il nemico a destra o a sinistra
 void basicenemy::mvright(){
 	takedamage();
+	if(isterrain(mvwinch(curwin, yLoc, xLoc+1))==true || isterrain(mvwinch(curwin, yLoc+1, xLoc+1))==false)
+		return;
 	mvwaddch(curwin, yLoc, xLoc, ' ');
 	xLoc++;
 	if(xLoc>=xMax-1)
@@ -62,6 +40,8 @@ void basicenemy::mvright(){
 
 void basicenemy::mvleft(){
 	takedamage();
+	if(isterrain(mvwinch(curwin, yLoc, xLoc-1))==true || isterrain(mvwinch(curwin, yLoc+1, xLoc-1))==false)
+		return;
 	mvwaddch(curwin, yLoc, xLoc, ' ');
 	xLoc--;
 	if(xLoc<=0)
@@ -73,7 +53,7 @@ void basicenemy::mvleft(){
 //che il nemico sia vivo.
 //Successivamente controlla se il giocatore è vicino al nemico, in caso affermativo, c'è una possibilità
 //su due che decida di sparare.
-//Nel caso non ci sia nessun nemico, allora c'è una possibilità su tre che decida di muoversi in una direzione casuale.
+//Nel caso non ci sia nessun giocatore, allora c'è una possibilità su tre che decida di muoversi in una direzione casuale.
 //I nemici non possono cadere
 void* basicenemy::behaviour(void*){
 
@@ -92,27 +72,39 @@ void* basicenemy::behaviour(void*){
 		}
 		else{
 			takedamage();
-			usleep(50000);
-			if(rand()%2==0 && (isterrain(mvwinch(curwin, yLoc+1, xLoc+1))==true)){
+			if(rand()%5==0){
 				if(isterrain(mvwinch(curwin, yLoc, xLoc+1))==true){
 					mvleft();
 					display();
+					usleep(50000);
+					wrefresh(curwin);
 				}
-				else if (isterrain(mvwinch(curwin, yLoc, xLoc-1))==false){
+				else{
 					mvright();
 					display();
+					usleep(50000);
+					wrefresh(curwin);
 				}
 			}
 
-			else if(rand()%2==1 && (isterrain(mvwinch(curwin, yLoc+1, xLoc-1))==true)){
+			else if(rand()%5==1){
 				if(isterrain(mvwinch(curwin, yLoc, xLoc-1))==true){
 					mvright();
 					display();
+					usleep(50000);
+					wrefresh(curwin);
 				}
-				else if (isterrain(mvwinch(curwin, yLoc, xLoc+1))==false){
+				else{
 					mvleft();
 					display();
+					usleep(50000);
+					wrefresh(curwin);
 				}
+			}
+			else{
+				usleep(50000);
+				wrefresh(curwin);
+				return NULL;
 			}
 			return NULL;
 		}
@@ -145,7 +137,6 @@ void basicenemy::takedamage(){
 		else
 			enemy=' ';
 	}
-
 }
 
 //Funzione dello sparo molto simile a quella del giocatore
@@ -242,4 +233,218 @@ void basicenemy::shoot(int dir){
 void basicenemy::display(){
 	mvwaddch(curwin, yLoc, xLoc, enemy);
 	takedamage();
+}
+
+
+
+/*
+ *
+ * SOTTOCLASSE JUMPING ENEMY
+ *
+ */
+
+void* jumpingenemy::behaviour(void*){
+
+	if(s==true){
+		shoot(dirlock);
+		return NULL;
+	}
+	if(life>0){
+		gravity();
+		if((playerfinder()==0 || playerfinder()==1) && life>0 && rand()%difficulty==0){
+			takedamage();
+			shoot(playerfinder());
+		}
+		if((bulletfinder()==0 || bulletfinder()==1) && s==false && rand()%difficulty==0){
+			jump(bulletfinder());
+		}
+		else{
+			takedamage();
+			if(rand()%5==0){
+				if(isterrain(mvwinch(curwin, yLoc, xLoc+1))==true){
+					mvleft();
+					display();
+					usleep(50000);
+					wrefresh(curwin);
+				}
+				else{
+					mvright();
+					display();
+					usleep(50000);
+					wrefresh(curwin);
+				}
+			}
+
+			else if(rand()%5==1){
+				if(isterrain(mvwinch(curwin, yLoc, xLoc-1))==true){
+					mvright();
+					display();
+					usleep(50000);
+					wrefresh(curwin);
+				}
+				else{
+					mvleft();
+					display();
+					usleep(50000);
+					wrefresh(curwin);
+				}
+			}
+			else{
+				usleep(50000);
+				wrefresh(curwin);
+				return NULL;
+			}
+			return NULL;
+		}
+	}
+	else
+		return NULL;
+}
+
+void jumpingenemy::mvup(){
+	if(isterrain(mvwinch(curwin, yLoc-1, xLoc))==true)
+		return;
+	mvwaddch(curwin, yLoc, xLoc, ' ');
+	yLoc--;
+	if(yLoc<=0)
+		yLoc=1;
+}
+
+void jumpingenemy::mvdown(){
+	if(isterrain(mvwinch(curwin, yLoc+1, xLoc))==true)
+		return;
+	mvwaddch(curwin, yLoc, xLoc, ' ');
+	yLoc++;
+	if(yLoc>=yMax-1)
+		yLoc=yMax-2;
+}
+
+void jumpingenemy::mvright(){
+	takedamage();
+	if(isterrain(mvwinch(curwin, yLoc, xLoc+1))==true)
+		return;
+	mvwaddch(curwin, yLoc, xLoc, ' ');
+	xLoc++;
+	if(xLoc>=xMax-1)
+		xLoc=xMax-2;
+}
+
+void jumpingenemy::mvleft(){
+	takedamage();
+	if(isterrain(mvwinch(curwin, yLoc, xLoc-1))==true)
+		return;
+	mvwaddch(curwin, yLoc, xLoc, ' ');
+	xLoc--;
+	if(xLoc<=0)
+		xLoc=1;
+}
+
+void jumpingenemy::gravity(){
+	while(isterrain(mvwinch(curwin, yLoc+1, xLoc))==false && yLoc+1!=yMax-1){
+		mvdown();
+		display();
+		usleep(42000);
+		wrefresh(curwin);
+	}
+}
+
+//Questo metodo serve a controllare se è presente un giocatore a una distanza massima di nove blocchi dal nemico
+int jumpingenemy::playerfinder(){
+	if(mvwinch(curwin, yLoc, xLoc-1)=='P' || mvwinch(curwin, yLoc, xLoc-2)=='P' || mvwinch(curwin, yLoc, xLoc-3)=='P'
+	   || mvwinch(curwin, yLoc, xLoc-4)=='P' || mvwinch(curwin, yLoc, xLoc-5)=='P' || mvwinch(curwin, yLoc, xLoc-6)=='P'
+	   || mvwinch(curwin, yLoc, xLoc-7)=='P' || mvwinch(curwin, yLoc, xLoc-8)=='P' || mvwinch(curwin, yLoc, xLoc-9)=='P'
+	   || mvwinch(curwin, yLoc, xLoc-10)=='P' || mvwinch(curwin, yLoc, xLoc-11)=='P' || mvwinch(curwin, yLoc, xLoc-12)=='P'
+	   || mvwinch(curwin, yLoc, xLoc-13)=='P' || mvwinch(curwin, yLoc, xLoc-14)=='P' || mvwinch(curwin, yLoc, xLoc-15)=='P')
+		return 0;
+	else if (mvwinch(curwin, yLoc, xLoc+1)=='P' || mvwinch(curwin, yLoc, xLoc+2)=='P' || mvwinch(curwin, yLoc, xLoc+3)=='P'
+			|| mvwinch(curwin, yLoc, xLoc+4)=='P' || mvwinch(curwin, yLoc, xLoc+5)=='P' || mvwinch(curwin, yLoc, xLoc+6)=='P'
+			|| mvwinch(curwin, yLoc, xLoc+7)=='P' || mvwinch(curwin, yLoc, xLoc+8)=='P' || mvwinch(curwin, yLoc, xLoc+9)=='P'
+		    || mvwinch(curwin, yLoc, xLoc+10)=='P' || mvwinch(curwin, yLoc, xLoc+11)=='P' || mvwinch(curwin, yLoc, xLoc+12)=='P'
+			|| mvwinch(curwin, yLoc, xLoc+13)=='P' || mvwinch(curwin, yLoc, xLoc+14)=='P' || mvwinch(curwin, yLoc, xLoc+15)=='P')
+		return 1;
+	else
+		return 2;
+}
+
+void jumpingenemy::takedamage(){
+	if(yLoc+1==yMax-1){
+		enemy=' ';
+		life=0;
+		mvwaddch(curwin, yLoc, xLoc, ' ');
+		wrefresh(curwin);
+	}
+	else if(mvwinch(curwin, yLoc, xLoc-1)=='o' || mvwinch(curwin, yLoc, xLoc+1)=='o'){
+		mvwaddch(curwin, yLoc, xLoc, ' ');
+		life--;
+		if(mvwinch(curwin, yLoc, xLoc-1)=='o')
+			mvwaddch(curwin, yLoc, xLoc-1, ' ');
+		else
+			mvwaddch(curwin, yLoc, xLoc+1, ' ');
+		if(life>0){
+			mvwaddch(curwin, yLoc, xLoc, enemy);
+			wrefresh(curwin);
+		}
+		else
+			enemy=' ';
+	}
+}
+
+int jumpingenemy::bulletfinder(){
+	if(mvwinch(curwin, yLoc, xLoc-1)=='o' || mvwinch(curwin, yLoc, xLoc-2)=='o' || mvwinch(curwin, yLoc, xLoc-3)=='o')
+		return 0;
+	else if (mvwinch(curwin, yLoc, xLoc+1)=='o' || mvwinch(curwin, yLoc, xLoc+2)=='o' || mvwinch(curwin, yLoc, xLoc+3)=='o')
+		return 1;
+	else
+		return 2;
+}
+
+void jumpingenemy::jump(int dir){
+	if(dir==0){
+		j=true;
+		for(int cont = 0; cont < 10; cont++){
+			mvup();
+			display();
+			usleep(10000);
+			wrefresh(curwin);
+			mvleft();
+			display();
+			usleep(10000);
+			wrefresh(curwin);
+		}
+		while(isterrain(mvwinch(curwin, yLoc+1, xLoc))==false && yLoc+1!=yMax-1){
+			mvdown();
+			display();
+			usleep(10000);
+			wrefresh(curwin);
+			mvleft();
+			display();
+			usleep(10000);
+			wrefresh(curwin);
+		}
+		j=false;
+	}
+	else{
+		j=true;
+		for(int cont = 0; cont < 10; cont++){
+			mvup();
+			display();
+			usleep(10000);
+			wrefresh(curwin);
+			mvright();
+			display();
+			usleep(10000);
+			wrefresh(curwin);
+		}
+		while(isterrain(mvwinch(curwin, yLoc+1, xLoc))==false && yLoc+1!=yMax-1){
+			mvdown();
+			display();
+			usleep(10000);
+			wrefresh(curwin);
+			mvright();
+			display();
+			usleep(10000);
+			wrefresh(curwin);
+		}
+		j=false;
+	}
 }

@@ -123,7 +123,7 @@ WINDOW* map_generator(class MAP map1, class MAP map2, class MAP map3, class MAP 
                 return map9.create_map();
             else if(seed==9)
                 return map10.create_map();
-            else
+            else if (seed==10)
                 return map1.create_map();
         }else{
             if(seed==1)
@@ -144,7 +144,7 @@ WINDOW* map_generator(class MAP map1, class MAP map2, class MAP map3, class MAP 
                 return map8.create_map();
             else if(seed==9)
                 return map9.create_map();
-            else
+            else if(seed==10)
                 return map10.create_map();
             }
 }
@@ -244,7 +244,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
     
     //previene il riallocamento errato del player all'avanzamento del livello se presente il 
     //saveFile
-    if(new_lvl==false){
+    if(new_lvl==true){
         player_x=4;
 	    player_y=22;
     }
@@ -282,6 +282,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                                             map7,map8,map9,map10,seed,true);
         WINDOW* new_map = map_generator(map1,map2,map3,map4,map5,map6,
                                         map7,map8,map9,map10,seed_generated,true);
+
         game_flow(y_scr,x_scr,new_map,box,map1,map2,map3,map4,map5,
                     map6,map7,map8,map9,map10,seed_generated,true);
         endwin();
@@ -294,6 +295,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
         refresh();
         death_screen(box,y_scr,x_scr,map1,map2,map3,map4,map5,map6,map7,
                         map8,map9,map10,seed);
+        remove("savegame.txt");
         endwin();
         return;
     }
@@ -326,6 +328,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 {
                 	clear();
                 	mvprintw(0, 0, "loading");
+                    mvprintw(1, 0, "press a key to continue");
                 	refresh();
                 	getch();
                 	clear();
@@ -334,6 +337,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 {
                     clear();
                     mvprintw(0, 0, "error in load screen ");
+                    mvprintw(1, 0, "press a key to continue");
                     refresh();
                     getch();
                     clear();
@@ -342,7 +346,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
                                                 map7,map8,map9,map10,seed,false);
                 game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
-                            map6,map7,map8,map9,map10,seed,true);
+                            map6,map7,map8,map9,map10,seed,false);
                 endwin();
                 return;
         }else if(cx==2){
@@ -357,6 +361,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 {
                 	clear();
                 	mvprintw(0, 0, "loading");
+                    mvprintw(1, 0, "press a key to continue");
                 	refresh();
                 	getch();
                 	clear();
@@ -365,6 +370,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 {
                 	clear();
                 	mvprintw(0, 0, "error in load screen ");
+                    mvprintw(1, 0, "press a key to continue");
                 	refresh();
                 	getch();
                 	clear();
@@ -373,7 +379,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
                                                 map7,map8,map9,map10,seed,false);
                 game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
-                            map6,map7,map8,map9,map10,seed,true);
+                            map6,map7,map8,map9,map10,seed,false);
                 endwin();
                 return;
             }else if(mx==2){
@@ -385,6 +391,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 {
                 	clear();
                     mvprintw(0, 0, "loading");
+                    mvprintw(1, 0, "press a key to continue");
                     refresh();
                     getch();
                     clear();
@@ -393,6 +400,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 {
                 	clear();
                 	mvprintw(0, 0, "error in load screen ");
+                    mvprintw(1, 0, "press a key to continue");
                 	refresh();
                 	getch();
                 	clear();
@@ -401,7 +409,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
                                                 map7,map8,map9,map10,seed,false);
                 game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
-                            map6,map7,map8,map9,map10,seed,true);
+                            map6,map7,map8,map9,map10,seed,false);
                 endwin();
                 return;
             }else{
@@ -418,6 +426,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                     	{
                     		clear();
                     		mvprintw(0, 0, "loading");
+                            mvprintw(1, 0, "press a key to continue");
                     		refresh();
                     		getch();
                     		clear();
@@ -426,6 +435,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                     	{
                     		clear();
                     		mvprintw(0, 0, "error in load screen ");
+                            mvprintw(1, 0, "press a key to continue");
                     		refresh();
                     	    getch();
                     	    clear();
@@ -434,25 +444,26 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
                                                 map7,map8,map9,map10,seed,false);
                 game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
-                            map6,map7,map8,map9,map10,seed,true);
+                            map6,map7,map8,map9,map10,seed,false);
                 endwin();
                 return;
             }
         }
     else if(cx==3){
         //salva partita
-        //salva partita
     	int kek=save_data(p, seed, "savegame.txt" );
     	if(kek==1)
     	{
     		clear();
     		mvprintw(0, 0, "game saved");
+            mvprintw(1, 0, "press a key to continue");
     		refresh();
     		getch();
     	}else
     	{
     		clear();
     		mvprintw(0, 0, "game could not be saved, oopsie :) ");
+            mvprintw(1, 0, "press a key to continue");
     		refresh();
     	    getch();
     	}
@@ -494,8 +505,8 @@ int main(int argc, char** argv){
         endwin();
         return 0;
     }else if(c==1){
-        int seed_generated=map_randomizer(map1,map2,map3,map4,map5,map6,map7,map8,map9,map10,0,false);
-
+        int seed_generated=map_randomizer(map1,map2,map3,map4,map5,map6,
+                                               map7,map8,map9,map10,0,false);
         //controllo file pre-esistente
         ifstream savegame;
         savegame.open("savegame.txt");
@@ -528,7 +539,7 @@ int main(int argc, char** argv){
                                         map7,map8,map9,map10,seed_generated,false);
 
         game_flow(y_scr,x_scr,map_used,pre_box,map1,map2,map3,map4,map5,map6,map7,
-                    map8,map9,map10,seed_generated,true);
+                    map8,map9,map10,seed_generated,false);
     }else{
     	clear();
     	mvprintw(0, 0, "Can't access yet! Press a key to start a new game");
@@ -536,12 +547,13 @@ int main(int argc, char** argv){
         clear();
         refresh();
 
-        int seed_generated=map_randomizer(map1,map2,map3,map4,map5,map6,map7,map8,map9,map10,0,false);
+        int seed_generated=map_randomizer(map1,map2,map3,map4,map5,map6,map7,
+                                               map8,map9,map10,0,false);
         WINDOW* map_used=map_generator(map1,map2,map3,map4,map5,map6,
                                         map7,map8,map9,map10,seed_generated,false);
 
         game_flow(y_scr,x_scr,map_used,pre_box,map1,map2,map3,map4,map5,map6,map7,
-                    map8,map9,map10,seed_generated,true);
+                    map8,map9,map10,seed_generated,false);
     }
     endwin(); //deallocaz. memoria
     return 0;

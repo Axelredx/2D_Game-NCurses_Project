@@ -22,3 +22,7 @@ int save_data(player* P, int Seed, string filename);
 
 
 //void read_data(){}
+
+void changeData_basic(int itemNum, string content);
+
+void copyFile(string oldFileName, string newFileName);
