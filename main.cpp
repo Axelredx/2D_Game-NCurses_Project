@@ -44,7 +44,7 @@ int main(int argc, char** argv){
         map2(30,120,y_scr/6,x_scr/6,false,true,false,false,true,false,51,60,0,0,2),
         map3(30,120,y_scr/6,x_scr/6,true,true,false,false,false,true,41,50,71,80,3),
         map4(30,120,y_scr/6,x_scr/6,true,true,true,true,false,false,31,40,61,70,4),
-        map5(30,120,y_scr/6,x_scr/6,true,false,false,true,true,false,21,30,80,90,5),
+        map5(30,120,y_scr/6,x_scr/6,true,false,false,true,true,false,21,30,81,90,5),
         map6(30,120,y_scr/6,x_scr/6,false,true,false,false,false,true,81,90,71,80,6),
         map7(30,120,y_scr/6,x_scr/6,true,true,true,true,false,false,11,20,61,70,7),
         map8(30,120,y_scr/6,x_scr/6,true,false,false,false,false,true,41,50,71,80,8),

@@ -64,3 +64,10 @@ public:
     void takedamage();
 
 };
+
+//Prende in input tre basicenemy e ne rilascia uno casualmente
+basicenemy* basic_enemy_randomizer (basicenemy* e1, basicenemy* e2, basicenemy* e3);
+
+//Una possibilità su quattro esca jumping enemy, nel caso esca, rilascia in output e, 
+//in caso cotrario rilascia NULL
+jumpingenemy* jumping_enemy_randomizer (jumpingenemy* e);

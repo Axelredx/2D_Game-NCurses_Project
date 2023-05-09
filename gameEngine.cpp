@@ -235,26 +235,48 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
 
     //sintassi: (finestra, y dello spawn del nemico, x dello spawn del nemico, 
     //              vita del nemico, icona del nemico (lasciala 'e'), soldi rilasciati alla morte)
-	basicenemy * e1 = new basicenemy(map, 15, 20, 1, 'e', 100);
+	basicenemy * e1 = new basicenemy(map, 15, 25, 1, 'e', 100);
 
-	basicenemy * e2 = new basicenemy(map, 15, 25, 1, 'e', 100);
+	basicenemy * e2 = new basicenemy(map, 15, 35, 1, 'e', 100);
 
-	basicenemy * e3 = new basicenemy(map, 15, 30, 3, 'e', 300);
+	basicenemy * e3 = new basicenemy(map, 15, 65, 3, 'e', 300);
 
 	//sintassi: (finestra, y dello spawn del nemico, x dello spawn del nemico, vita del nemico, 
     //              icona del nemico (lasciala 'e'),
-	//soldi rilasciati alla morte, difficoltà del nemico !PIU IL NUMERO E' BASSO PIU E' DIFFICILE! 
-    //                  (non usare numeri negativi)
-	//sconsiglio di scendere sotto a 3)
-	jumpingenemy * e4 = new jumpingenemy (map, 15, 35, 3, 'e', 600, 4);
+	//soldi rilasciati alla morte, difficoltà del nemico !PIU IL NUMERO 
+    //E' BASSO PIU E' DIFFICILE! (non usare numeri negativi; sconsiglio di scendere sotto a 3)
+	jumpingenemy * e4 = new jumpingenemy (map, 15, 95, 3, 'e', 600, 4);
 
 	//Inizializzazione del thread giocatore e nemici
-	pthread_t playerthread, enemythread1, enemythread2, enemythread3, enemythread4;
+	pthread_t playerthread, enemythread;
+
+    basicenemy* b_e;
+    jumpingenemy* j_e=jumping_enemy_randomizer(e4);
+    if(j_e==NULL)
+        b_e=basic_enemy_randomizer(e1,e2,e3);
+    //prevents infinite money
+    int count_money=0;
 	do{
 		//Creazione del thread
 		pthread_create(&playerthread, NULL, (THREADFUNCPTR) &player::display, p);
 		//Aspetta che il thread finisca di elaborare
 		pthread_join(playerthread, NULL);
+        //Creazione del thread nemico
+        if(j_e==NULL){
+            pthread_create(&enemythread, NULL, (THREADFUNCPTR) &basicenemy::behaviour, b_e);
+            pthread_join(enemythread, NULL);
+            if(b_e->life==0 && count_money==0){
+                p->money=p->money+b_e->money;
+                count_money++;
+            }
+        }else{
+            pthread_create(&enemythread, NULL, (THREADFUNCPTR) &jumpingenemy::behaviour, j_e);
+            pthread_join(enemythread, NULL);
+            if(j_e->life==0 && count_money==0){
+                p->money=p->money+j_e->money;
+                count_money++;
+            }
+        }
         //refresh mappa
 		refresh();
 		wrefresh(map);
