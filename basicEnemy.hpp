@@ -37,10 +37,12 @@ public:
 	int playerfinder();
 	void mvleft();
 	void mvright();
+	void mvdown();
 	void* behaviour(void*);
 	void shoot(int dir);
     bool isterrain(char t);
     void takedamage();
+    void gravity();
 };
 
 class jumpingenemy: public basicenemy{
@@ -53,7 +55,6 @@ public:
 		difficulty=d;
 	}
 	void mvup();
-	void mvdown();
 	void mvleft();
 	void mvright();
 	int playerfinder();
@@ -61,5 +62,5 @@ public:
     void jump(int dir);
 	void* behaviour(void*);
     void takedamage();
-    void gravity();
+
 };

@@ -20,10 +20,10 @@ player::player(WINDOW * win, int y, int x, char c, int m, int l){
 	character=c;
 
 	//Vita del giocatore
-	life=l;
+	life=3;
 
 	//Soldi del giocatore (al momento inutilizzata)
-	money=m;
+	money=100;
 
 	//Indica le y del proiettile
 	projy=y;
