@@ -1,4 +1,4 @@
-#include "dataManager.hpp"	//includes market, which includes player and box
+#include "dataManager.hpp"	//includes market.hpp, which includes player.hpp and box.hpp
 #include "basicEnemy.hpp"
 
 //scheramata iniziale

@@ -126,6 +126,7 @@ WINDOW* map_generator(class MAP map1, class MAP map2, class MAP map3, class MAP 
             }
 }
 
+//game engine
 void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 class MAP map1, class MAP map2, class MAP map3, class MAP map4,
                 class MAP map5, class MAP map6, class MAP map7, class MAP map8,
@@ -220,8 +221,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
 
 	    }
     
-    //previene il riallocamento errato del player all'avanzamento del livello se presente il 
-    //saveFile
+    //set position of player if there is a savefile and proceed in a new level
     if(new_lvl==true){
         player_x=4;
 	    player_y=22;
@@ -233,15 +233,18 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
 
     p->salto=saltoH;
 
-//sintassi: (finestra, y dello spawn del nemico, x dello spawn del nemico, vita del nemico, icona del nemico (lasciala 'e'), soldi rilasciati alla morte)
+    //sintassi: (finestra, y dello spawn del nemico, x dello spawn del nemico, 
+    //              vita del nemico, icona del nemico (lasciala 'e'), soldi rilasciati alla morte)
 	basicenemy * e1 = new basicenemy(map, 15, 20, 1, 'e', 100);
 
 	basicenemy * e2 = new basicenemy(map, 15, 25, 1, 'e', 100);
 
 	basicenemy * e3 = new basicenemy(map, 15, 30, 3, 'e', 300);
 
-	//sintassi: (finestra, y dello spawn del nemico, x dello spawn del nemico, vita del nemico, icona del nemico (lasciala 'e'),
-	//soldi rilasciati alla morte, difficoltà del nemico !PIU IL NUMERO E' BASSO PIU E' DIFFICILE! (non usare numeri negativi)
+	//sintassi: (finestra, y dello spawn del nemico, x dello spawn del nemico, vita del nemico, 
+    //              icona del nemico (lasciala 'e'),
+	//soldi rilasciati alla morte, difficoltà del nemico !PIU IL NUMERO E' BASSO PIU E' DIFFICILE! 
+    //                  (non usare numeri negativi)
 	//sconsiglio di scendere sotto a 3)
 	jumpingenemy * e4 = new jumpingenemy (map, 15, 35, 3, 'e', 600, 4);
 
@@ -260,7 +263,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
 
 	}while(p->move()!=27 && p->life!=0 && p->playeroutput(1)!=116);
 
-    //entrata nuova stanza
+    //entrance in new level 
     if(p->playeroutput(1)==116){
         clear();
         refresh();

@@ -29,7 +29,7 @@ int main(int argc, char** argv){
     getmaxyx(stdscr,y_scr,x_scr);//screen measure
 
     BOX pre_box(y_scr/2,x_scr/2,y_scr/4,x_scr/4);
-    BOX main_box(30,120,0,0);//height,width,start_y,start_x
+    //BOX main_box(30,120,0,0); height,width,start_y,start_x
 
     char v1[20], v2[20], v3[20], v4[20];
     strcpy(v1,"Menu");
@@ -38,6 +38,8 @@ int main(int argc, char** argv){
     strcpy(v4,"Esc");
 
     MENU menu(y_scr/2,x_scr/2,y_scr/4,x_scr/4,v1,v2,v3,v4);
+    // map(height,lenght,y_scr,x_scr,ladders,holes,twoHoles?,twoLadders?,
+    //     cloud,day,x1_hole_start,x1_hole_finish,x2_hole_start,x2_hole_finish,map seed)
     MAP map1(30,120,y_scr/6,x_scr/6,true,true,true,false,true,true,31,40,81,90,1),
         map2(30,120,y_scr/6,x_scr/6,false,true,false,false,true,false,51,60,0,0,2),
         map3(30,120,y_scr/6,x_scr/6,true,true,false,false,false,true,41,50,71,80,3),
@@ -56,6 +58,9 @@ int main(int argc, char** argv){
         endwin();
         return 0;
     }else if(c==2){
+        mvprintw(0, 0, "Press a key to start the Game from the Game-Save!");
+    	getch();
+        clear();
         int seed_generated=map_randomizer(map1,map2,map3,map4,map5,map6,
                                                map7,map8,map9,map10,0,false);
         //check if savegame.txt exists
@@ -93,9 +98,6 @@ int main(int argc, char** argv){
                     map8,map9,map10,seed_generated,false);
     }else{
     	clear();
-    	mvprintw(0, 0, "Press a key to start the game from the gamefile");
-    	getch();
-        clear();
         refresh();
         remove("savegame.txt");
         int seed_generated=map_randomizer(map1,map2,map3,map4,map5,map6,map7,
