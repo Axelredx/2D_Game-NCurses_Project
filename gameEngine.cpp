@@ -1,6 +1,14 @@
 #include "gameEngine.hpp"
 typedef void * (*THREADFUNCPTR)(void *);
 
+//screen initzialization
+void initialize(){
+    initscr(); //initialization of screen and memory
+    refresh(); //refresh screen to be compatible with what is in memory
+    noecho(); //impedisce all'user di typare
+    curs_set(false); //cursor hider
+}
+
 //scheramata iniziale
 void pregame(class BOX box, int y_scr, int x_scr){
     WINDOW* fin=box.create_box();

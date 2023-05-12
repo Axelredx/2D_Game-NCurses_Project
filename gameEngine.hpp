@@ -1,6 +1,8 @@
 #include "dataManager.hpp"	//includes market.hpp, which includes player.hpp and box.hpp
 #include "basicEnemy.hpp"
 
+//screen initzialization
+void initialize();
 //scheramata iniziale
 void pregame(class BOX box, int y_scr, int x_scr);
 //deathscreen

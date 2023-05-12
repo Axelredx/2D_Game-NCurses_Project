@@ -15,14 +15,6 @@
 #include "gameEngine.hpp"
 using namespace std;
 
-//screen initzialization
-void initialize(){
-    initscr(); //initialization of screen and memory
-    refresh(); //refresh screen to be compatible with what is in memory
-    noecho(); //impedisce all'user di typare
-    curs_set(false); //cursor hider
-}
-
 int main(int argc, char** argv){
     initialize();
     int y_scr, x_scr;
