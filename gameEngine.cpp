@@ -1,7 +1,6 @@
 #include "gameEngine.hpp"
 typedef void * (*THREADFUNCPTR)(void *);
 
-//screen initzialization
 void initialize(){
     initscr(); //initialization of screen and memory
     refresh(); //refresh screen to be compatible with what is in memory
@@ -9,7 +8,6 @@ void initialize(){
     curs_set(false); //cursor hider
 }
 
-//scheramata iniziale
 void pregame(class BOX box, int y_scr, int x_scr){
     WINDOW* fin=box.create_box();
     mvwprintw(fin,y_scr/4,(x_scr/4)-3,"THE GAME");
@@ -20,7 +18,6 @@ void pregame(class BOX box, int y_scr, int x_scr){
     clear();
 }
 
-//schermata di morte
 void death_screen(class BOX box, int y_scr, int x_scr, class MAP map1, class MAP map2, class MAP map3, class MAP map4,
                        class MAP map5, class MAP map6, class MAP map7, class MAP map8,
                        class MAP map9, class MAP map10, int seed){
@@ -34,7 +31,6 @@ void death_screen(class BOX box, int y_scr, int x_scr, class MAP map1, class MAP
     return;
 }
 
-//genera un seed
 int map_randomizer(class MAP map1, class MAP map2, class MAP map3, class MAP map4,
                        class MAP map5, class MAP map6, class MAP map7, class MAP map8,
                        class MAP map9, class MAP map10, int prev_seed, bool next_seed){
@@ -85,7 +81,6 @@ int map_randomizer(class MAP map1, class MAP map2, class MAP map3, class MAP map
             }
 }
 
-//restituisce puntatore mappa in base al seed
 WINDOW* map_generator(class MAP map1, class MAP map2, class MAP map3, class MAP map4,
                        class MAP map5, class MAP map6, class MAP map7, class MAP map8,
                        class MAP map9, class MAP map10, int seed, bool nxt_lvl){
@@ -134,7 +129,6 @@ WINDOW* map_generator(class MAP map1, class MAP map2, class MAP map3, class MAP 
             }
 }
 
-//game engine
 void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 class MAP map1, class MAP map2, class MAP map3, class MAP map4,
                 class MAP map5, class MAP map6, class MAP map7, class MAP map8,

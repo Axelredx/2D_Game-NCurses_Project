@@ -3,9 +3,9 @@
 
 //screen initzialization
 void initialize();
-//scheramata iniziale
+//initail screen
 void pregame(class BOX box, int y_scr, int x_scr);
-//deathscreen
+//death screen
 void death_screen(class BOX box, int y_scr, int x_scr, class MAP map1, class MAP map2, class MAP map3, class MAP map4,
                        class MAP map5, class MAP map6, class MAP map7, class MAP map8,
                        class MAP map9, class MAP map10, int seed);
