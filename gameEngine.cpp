@@ -57,7 +57,7 @@ int map_randomizer(class MAP map1, class MAP map2, class MAP map3, class MAP map
                 return 1;
         }else{
             srand(time(0));
-            int result=rand()%11;
+            int result=rand()%10;
             if(result==1)
                 return map1.map_seed;
             else if(result==2)
@@ -103,7 +103,7 @@ WINDOW* map_generator(class MAP map1, class MAP map2, class MAP map3, class MAP 
                 return map9.create_map();
             else if(seed==9)
                 return map10.create_map();
-            else if (seed==10)
+            else if(seed==10)
                 return map1.create_map();
         }else{
             if(seed==1)
@@ -126,7 +126,7 @@ WINDOW* map_generator(class MAP map1, class MAP map2, class MAP map3, class MAP 
                 return map9.create_map();
             else if(seed==10)
                 return map10.create_map();
-            }
+        }
 }
 
 void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
@@ -142,7 +142,8 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
 	money=100;
 	life=3;
 	int saltoH=10;
-	/*
+    int mapSeed=0;
+    /*
 	 * ultima versione del salvataggio
 	 * le righe hanno una piccola descrizione di cosa rappresenta il numero che segue nel file di salvataggio
 	 * per selezionare solo il dato, ho implementato questo insieme di operazioni
@@ -217,13 +218,18 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 saltoH=stoi(lel);
             }
 
+            getline(savegame, lel, '#');		//check for saving of player health
+            if(lel.compare("map")==0)
+            {
+                getline(savegame, lel, '\n');
+                mapSeed=stoi(lel);
+            }
 
 
             savegame.close();
-
 	    }
-    
-    //set position of player if there is a savefile and proceed in a new level
+
+    //set position of player if there was savefile and proceed in a new level
     if(new_lvl==true){
         player_x=4;
 	    player_y=22;
@@ -282,20 +288,17 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
         //refresh mappa
 		refresh();
 		wrefresh(map);
-        //aggiungere parametro x capire se player ha raggiunto fine lvl,
-        // allora passare al prossimo
-
+        remove("savegame.txt");
 	}while(p->move()!=27 && p->life!=0 && p->playeroutput(1)!=116);
 
     //entrance in new level 
     if(p->playeroutput(1)==116){
         clear();
         refresh();
-        int seed_generated=map_randomizer(map1,map2,map3,map4,map5,map6,
-                                            map7,map8,map9,map10,seed,true);
+        int seed_generated=map_randomizer(map1,map2,map3,map4,map5,map6,map7,
+                                               map8,map9,map10,seed,true);
         WINDOW* new_map = map_generator(map1,map2,map3,map4,map5,map6,
-                                        map7,map8,map9,map10,seed_generated,true);
-
+                                        map7,map8,map9,map10,seed_generated,false);
         game_flow(y_scr,x_scr,new_map,box,map1,map2,map3,map4,map5,
                     map6,map7,map8,map9,map10,seed_generated,true);
         endwin();

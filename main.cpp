@@ -92,7 +92,7 @@ int main(int argc, char** argv){
         refresh();
         remove("savegame.txt");
         int seed_generated=map_randomizer(map1,map2,map3,map4,map5,map6,map7,
-                                               map8,map9,map10,0,false);
+                                               map8,map9,map10,1,false);
         WINDOW* map_used=map_generator(map1,map2,map3,map4,map5,map6,
                                         map7,map8,map9,map10,seed_generated,false);
 

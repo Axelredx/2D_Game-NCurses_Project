@@ -53,6 +53,8 @@ int MENU::choice(){
 
 WINDOW* MAP::create_map(){
     WINDOW* fin=BOX::create_box();
+    string map_seed_str= to_string(map_seed);
+    mvprintw(0, 0, "mappa: %s", map_seed_str.c_str());
     mvwprintw(fin,22,1,"[]");
     mvwprintw(fin,22,width-3,"()");
     //buchi nella mappa
