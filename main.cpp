@@ -53,8 +53,7 @@ int main(int argc, char** argv){
         mvprintw(0, 0, "Press a key to start the Game from the Game-Save!");
     	getch();
         clear();
-        int seed_generated=map_randomizer(map1,map2,map3,map4,map5,map6,
-                                               map7,map8,map9,map10,0,false);
+        int seed_generated=0;
         //check if savegame.txt exists
         ifstream savegame;
         savegame.open("savegame.txt");
@@ -84,7 +83,7 @@ int main(int argc, char** argv){
         savegame.close();
 
         WINDOW* map_used=map_generator(map1,map2,map3,map4,map5,map6,
-                                        map7,map8,map9,map10,seed_generated,false);
+                                        map7,map8,map9,map10,seed_generated,true);
 
         game_flow(y_scr,x_scr,map_used,pre_box,map1,map2,map3,map4,map5,map6,map7,
                     map8,map9,map10,seed_generated,false);
