@@ -1,5 +1,7 @@
 #include "gameEngine.hpp"
 typedef void * (*THREADFUNCPTR)(void *);
+//game score of player
+int game_scr = 0;
 
 void initialize(){
     initscr(); //initialization of screen and memory
@@ -22,8 +24,9 @@ void death_screen(class BOX box, int y_scr, int x_scr, class MAP map1, class MAP
                        class MAP map5, class MAP map6, class MAP map7, class MAP map8,
                        class MAP map9, class MAP map10, int seed){
     WINDOW* fin=box.create_box();
-    mvwprintw(fin,y_scr/4,(x_scr/4)-3,"YOU DIED");
-    mvwprintw(fin,(y_scr/4)+1,(x_scr/4)-10," press a key to exit");
+    mvwprintw(fin,y_scr/4,(x_scr/4)-4,"YOU DIED");
+    mvwprintw(fin,(y_scr/4)+1,(x_scr/4)-6,"Your SCORE: %d", game_scr);
+    mvwprintw(fin,(y_scr/4)+2,(x_scr/4)-10," press a key to exit");
     refresh();
     wrefresh(fin);
     getch();
@@ -218,7 +221,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 saltoH=stoi(lel);
             }
 
-            getline(savegame, lel, '#');		//check for saving of player health
+            getline(savegame, lel, '#');		//check for seed of Map
             if(lel.compare("map")==0)
             {
                 getline(savegame, lel, '\n');
@@ -264,37 +267,52 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
         b_e=basic_enemy_randomizer(e1,e2,e3);
     //prevents infinite money
     int count_money=0;
+    //counter if enemy is dead
+    bool dead_enemy=false;
 	do{
 		//Creazione del thread
 		pthread_create(&playerthread, NULL, (THREADFUNCPTR) &player::display, p);
 		//Aspetta che il thread finisca di elaborare
 		pthread_join(playerthread, NULL);
         //Creazione del thread nemico
+
         if(j_e==NULL){
             pthread_create(&enemythread, NULL, (THREADFUNCPTR) &basicenemy::behaviour, b_e);
             pthread_join(enemythread, NULL);
+            //reward killing basic enemy
             if(b_e->life==0 && count_money==0){
+                dead_enemy=true;
+                game_scr+=40;
                 p->money=p->money+b_e->money;
                 count_money++;
             }
         }else{
             pthread_create(&enemythread, NULL, (THREADFUNCPTR) &jumpingenemy::behaviour, j_e);
             pthread_join(enemythread, NULL);
+            //reward killing jumping enemy
             if(j_e->life==0 && count_money==0){
+                dead_enemy=true;
+                game_scr+=60;
                 p->money=p->money+j_e->money;
                 count_money++;
             }
         }
-        //refresh mappa
+
+        mvwprintw(map, 0, (x_scr/4)+5, "SCORE: %d", game_scr);
+
 		refresh();
 		wrefresh(map);
+
         remove("savegame.txt");
-	}while(p->move()!=27 && p->life!=0 && p->playeroutput(1)!=116);
+
+	}while(p->move()!=27 && p->life!=0 && p->playeroutput(1)<=116);
 
     //entrance in new level 
-    if(p->playeroutput(1)==116){
+    if(p->playeroutput(1)>=116){
         clear();
         refresh();
+        //reward for passing lvl
+        game_scr+=100;
         int seed_generated=map_randomizer(map1,map2,map3,map4,map5,map6,map7,
                                                map8,map9,map10,seed,true);
         WINDOW* new_map = map_generator(map1,map2,map3,map4,map5,map6,
@@ -306,7 +324,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
     }
 
     //death of player
-    if(p->life==0){
+    if(p->life<1){
         clear();
         refresh();
         death_screen(box,y_scr,x_scr,map1,map2,map3,map4,map5,map6,map7,
@@ -322,50 +340,48 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
         strcpy(v3,"Market");
         strcpy(v4,"Save and exit");
 
-        MENU menu(y_scr/2,x_scr/2,y_scr/4,x_scr/4,v1,v2,v3,v4);
+    MENU menu(y_scr/2,x_scr/2,y_scr/4,x_scr/4,v1,v2,v3,v4);
 
-        char v5[20], v6[20], v7[20], v8[20];
+    char v5[20], v6[20], v7[20], v8[20];
         strcpy(v5,"Market");
         strcpy(v6,"Health boost");
         strcpy(v7,"Jump boost");
         strcpy(v8,"Return to the game");
 
-        MENU market(y_scr/2,x_scr/2,y_scr/4,x_scr/4,v5,v6,v7,v8);
+    MENU market(y_scr/2,x_scr/2,y_scr/4,x_scr/4,v5,v6,v7,v8);
 
         clear();
         refresh();
 
         int cx=menu.choice();
-        if(cx==1){
+    if(cx==1){
+            clear();
+            refresh();
+            int kek=save_data(p, seed, "savegame.txt" );
+            if(kek==1){
+                clear();
+                mvprintw(0, 0, "loading");
+                mvprintw(1, 0, "press a key to continue");
+                refresh();
+                getch();
                 clear();
                 refresh();
-                int kek=save_data(p, seed, "savegame.txt" );
-                if(kek==1)
-                {
-                	clear();
-                	mvprintw(0, 0, "loading");
-                    mvprintw(1, 0, "press a key to continue");
-                	refresh();
-                	getch();
-                	clear();
-                	refresh();
-                }else
-                {
-                    clear();
-                    mvprintw(0, 0, "error in load screen ");
-                    mvprintw(1, 0, "press a key to continue");
-                    refresh();
-                    getch();
-                    clear();
-                    refresh();
-                }
-                WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
-                                                map7,map8,map9,map10,seed,false);
-                game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
-                            map6,map7,map8,map9,map10,seed,false);
-                endwin();
-                return;
-        }else if(cx==2){
+            }else{
+                clear();
+                mvprintw(0, 0, "error in load screen ");
+                mvprintw(1, 0, "press a key to continue");
+                refresh();
+                getch();
+                clear();
+                refresh();
+            }
+            WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
+                                            map7,map8,map9,map10,seed,false);
+            game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
+                        map6,map7,map8,map9,map10,seed,false);
+            endwin();
+            return;
+    }else if(cx==2){
             //accesso al market
            int mx=market.choice();
             if(mx==1){
@@ -373,8 +389,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 clear();
                 refresh();
                 int kek=save_data(p, seed, "savegame.txt" );
-                if(kek==1)
-                {
+                if(kek==1){
                 	clear();
                 	mvprintw(0, 0, "loading");
                     mvprintw(1, 0, "press a key to continue");
@@ -382,8 +397,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 	getch();
                 	clear();
                 	refresh();
-                }else
-                {
+                }else{
                 	clear();
                 	mvprintw(0, 0, "error in load screen ");
                     mvprintw(1, 0, "press a key to continue");
@@ -403,8 +417,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 clear();
                 refresh();
                 int kek=save_data(p, seed, "savegame.txt" );
-                if(kek==1)
-                {
+                if(kek==1){
                 	clear();
                     mvprintw(0, 0, "loading");
                     mvprintw(1, 0, "press a key to continue");
@@ -412,8 +425,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                     getch();
                     clear();
                     refresh();
-                }else
-                {
+                }else{
                 	clear();
                 	mvprintw(0, 0, "error in load screen ");
                     mvprintw(1, 0, "press a key to continue");
@@ -432,41 +444,36 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 clear();
                 refresh();
                 /*
-                 * ottenimento dati del giocatore al momento dell'invocazione del resume
+                 * giving back player data after resume
                  *
                  */
-
-                //int py, px, lf, mn;
                 int kek=save_data(p, seed, "savegame.txt" );
-                if(kek==1)
-                    	{
-                    		clear();
-                    		mvprintw(0, 0, "loading");
-                            mvprintw(1, 0, "press a key to continue");
-                    		refresh();
-                    		getch();
-                    		clear();
-                    		refresh();
-                    	}else
-                    	{
-                    		clear();
-                    		mvprintw(0, 0, "error in load screen ");
-                            mvprintw(1, 0, "press a key to continue");
-                    		refresh();
-                    	    getch();
-                    	    clear();
-                    	    refresh();
-                    	}
-                WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
-                                                map7,map8,map9,map10,seed,false);
-                game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
-                            map6,map7,map8,map9,map10,seed,false);
-                endwin();
-                return;
+                if(kek==1){
+            		clear();
+            		mvprintw(0, 0, "loading");
+                    mvprintw(1, 0, "press a key to continue");
+            		refresh();
+            		getch();
+            		clear();
+            		refresh();
+            	}else{
+                	clear();
+            		mvprintw(0, 0, "error in load screen ");
+                    mvprintw(1, 0, "press a key to continue");
+            		refresh();
+            	    getch();
+            	    clear();
+            	    refresh();
+            	}
+            WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
+                                            map7,map8,map9,map10,seed,false);
+            game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
+                        map6,map7,map8,map9,map10,seed,false);
+            endwin();
+            return;
             }
-        }
-    else if(cx==3){
-        //salva partita
+    }else if(cx==3){
+        //save game
     	int kek=save_data(p, seed, "savegame.txt" );
     	if(kek==1)
     	{

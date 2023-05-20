@@ -2,7 +2,7 @@
 #include "player.hpp"
 
 //Costruttore della classe
-player::player(WINDOW * win, int y, int x, char c, int m, int l){
+player::player(WINDOW * win, int y=15, int x=4, char c='P', int m=100, int l=3){
 	curwin = win;
 	nodelay(curwin, TRUE);
 

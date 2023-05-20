@@ -26,3 +26,5 @@ int save_data(player* P, int Seed, string filename);
 void changeData_basic(int itemNum, string content);
 
 void copyFile(string oldFileName, string newFileName);
+
+int obtain_data(int kek);

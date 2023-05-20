@@ -56,7 +56,7 @@ WINDOW* MAP::create_map(){
     string map_seed_str= to_string(map_seed);
     mvprintw(0, 0, "mappa: %s", map_seed_str.c_str());
     mvwprintw(fin,22,1,"[]");
-    mvwprintw(fin,22,width-3,"()");
+    mvwprintw(fin,22,width-3,"{}");
     //buchi nella mappa
     for(int i=0;i<width;i++){
         for(int j=0;j<height;j++){
@@ -152,8 +152,6 @@ WINDOW* MAP::create_map(){
         mvwprintw(fin,7,100,";]}}'");
         mvwprintw(fin,8,99,"+**");
     } 
-
-
 
 
     refresh();

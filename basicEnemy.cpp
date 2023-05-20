@@ -1,16 +1,8 @@
 #include "basicEnemy.hpp"
 
 		/*
-		 *      ___ ___  ___      __    __        ___
- 	 	 	/\   |   |  |__  |\ |  / | /  \ |\ | |__
-		 * /~~\  |   |  |___ | \| /_ | \__/ | \| |___
-		 *
-		 * Questa classe funziona ma è da migliorare e sono presenti alcuni bug che non ho ancora risolto quali:
-		 *
-		 * - P che spuntano apparentemente senza motivo nella mappa
-		 *
-		 * Se trovate modo di risolvere questi bug, ditemelo e modificherò la classe!
-		 */
+		* functions regarding enemies
+		*/
 
 //Prende in input tre basicenemy e ne rilascia uno casualmente
 basicenemy* basic_enemy_randomizer (basicenemy* e1, basicenemy* e2, basicenemy* e3){
