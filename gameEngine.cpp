@@ -243,20 +243,19 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
         //x da cui il personaggio spawna, icona del personaggio)
 
     p->salto=saltoH;
-
     //sintassi: (finestra, y dello spawn del nemico, x dello spawn del nemico, 
     //              vita del nemico, icona del nemico (lasciala 'e'), soldi rilasciati alla morte)
-	basicenemy * e1 = new basicenemy(map, 15, 25, 1, 'e', 100);
+	basicenemy * e1 = new basicenemy(map, 15, 25, 1, 'e', 50);
 
-	basicenemy * e2 = new basicenemy(map, 15, 35, 1, 'e', 100);
+	basicenemy * e2 = new basicenemy(map, 15, 35, 1, 'e', 50);
 
-	basicenemy * e3 = new basicenemy(map, 15, 65, 3, 'e', 300);
+	basicenemy * e3 = new basicenemy(map, 15, 65, 3, 'e', 80);
 
 	//sintassi: (finestra, y dello spawn del nemico, x dello spawn del nemico, vita del nemico, 
     //              icona del nemico (lasciala 'e'),
 	//soldi rilasciati alla morte, difficoltà del nemico !PIU IL NUMERO 
     //E' BASSO PIU E' DIFFICILE! (non usare numeri negativi; sconsiglio di scendere sotto a 3)
-	jumpingenemy * e4 = new jumpingenemy (map, 15, 95, 3, 'e', 600, 4);
+	jumpingenemy * e4 = new jumpingenemy (map, 15, 95, 3, 'E', 100, 4);
 
 	//Inizializzazione del thread giocatore e nemici
 	pthread_t playerthread, enemythread;

@@ -1,58 +1,25 @@
 
 #include "player.hpp"
 
-//Costruttore della classe
-player::player(WINDOW * win, int y=15, int x=4, char c='P', int m=100, int l=3){
-	curwin = win;
-	nodelay(curwin, TRUE);
 
-	yLoc=y;
-	xLoc = x;
-
-	//Coordinata y dello spawn del giocatore
-	originy=y;
-
-	//Coordinata x dello spawn del giocatore
-	originx=x;
-
-	getmaxyx(curwin, yMax, xMax);
-	keypad(curwin, true);
-	character=c;
-
-	//Vita del giocatore
-	life=l;
-
-	//Soldi del giocatore 
-	money=m;
-
-	//Indica le y del proiettile
-	projy=y;
-
-	//Indica le x del proiettile
-	projx=x;
-
-	//Indica se un proiettile sta venendo disegnato
-	s=false;
-
-	//Indica l'ultima direzione in cui il giocatore è andato
-	dir=false;
-
-	//Blocca la direzione del proiettile
-	dirlock=false;
-
-	//Indica se il giocatore sta saltando
-	j=false;
-
-	//Stampa la vita del giocatore
-	mvwprintw(curwin, 0, 0,"HP: %d", life);
-
-	//Stampa i soldi del giocatore
-	mvwprintw(curwin, 0, xMax-10,"COINS: %d", money);
-}
 
 //ritorna true se il char in input è considerabile terreno, false atrimenti
 bool player::isterrain(char t){
 	if(t=='#' || t=='-' || t=='|' || t=='e')
+		return true;
+	else
+		return false;
+}
+
+bool player::bulletterrain(char t){
+	if(t=='#' || t=='-' || t=='|' || t=='e' || t=='{' || t=='[' || t==']' || t=='}' || t=='(' || t==')')
+		return true;
+	else
+		return false;
+}
+
+bool player::isenemy(char t){
+	if(t=='e' || t=='E' || t=='j' || t=='J' || t=='&' || t=='<')
 		return true;
 	else
 		return false;
@@ -181,7 +148,7 @@ void player::mvup(){
 }
 
 void player::mvdown(){
-	if(mvwinch(curwin, yLoc+1, xLoc)=='#' || mvwinch(curwin, yLoc+1, xLoc)=='|' || mvwinch(curwin, yLoc, xLoc+1)=='e')
+	if(mvwinch(curwin, yLoc+1, xLoc)=='#' || mvwinch(curwin, yLoc+1, xLoc)=='|' || isenemy(mvwinch(curwin, yLoc+1, xLoc))==true)
 		return;
 	if(mvwinch(curwin, yLoc+1, xLoc)=='-')
 		stairsdown();
@@ -192,7 +159,7 @@ void player::mvdown(){
 }
 
 void player::mvright(){
-	if(mvwinch(curwin, yLoc, xLoc+1)=='#' || mvwinch(curwin, yLoc, xLoc+1)=='|' || mvwinch(curwin, yLoc, xLoc+1)=='e')
+	if(mvwinch(curwin, yLoc, xLoc+1)=='#' || mvwinch(curwin, yLoc, xLoc+1)=='|' || isenemy(mvwinch(curwin, yLoc, xLoc+1))==true)
 		return;
 	if(mvwinch(curwin, yLoc, xLoc+1)=='-')
 		stairsup();
@@ -203,7 +170,7 @@ void player::mvright(){
 }
 
 void player::mvleft(){
-	if(mvwinch(curwin, yLoc, xLoc-1)=='#' || mvwinch(curwin, yLoc, xLoc-1)=='|' || mvwinch(curwin, yLoc, xLoc-1)=='e')
+	if(mvwinch(curwin, yLoc, xLoc-1)=='#' || mvwinch(curwin, yLoc, xLoc-1)=='|' || isenemy(mvwinch(curwin, yLoc, xLoc-1))==true)
 		return;
 	if(mvwinch(curwin, yLoc, xLoc-1)=='-')
 		stairsup();
@@ -443,7 +410,7 @@ void player::shoot(){
 		projx = xLoc-2;
 		dirlock = dir;
 		s=true;
-		if(isterrain(mvwinch(curwin, projy, projx))==false && isterrain(mvwinch(curwin, projy, projx+1))==false && projx>=2){
+		if(bulletterrain(mvwinch(curwin, projy, projx))==false && bulletterrain(mvwinch(curwin, projy, projx+1))==false && projx>=2){
 			mvwaddch(curwin, projy, projx+1, ' ');
 			usleep(5000);
 			display(NULL);
@@ -457,11 +424,11 @@ void player::shoot(){
 			if(j==false)
 				gravity();
 		}
-		else if(mvwinch(curwin, projy, projx-1)=='e'){
+		else if(isenemy(mvwinch(curwin, projy, projx-1))==true){
 			s=false;
 			return;
 		}
-		else if(isterrain(mvwinch(curwin, projy, projx+1))==false)
+		else if(bulletterrain(mvwinch(curwin, projy, projx+1))==false)
 			mvwaddch(curwin, projy, projx+1, ' ');
 		else{
 			mvwaddch(curwin, projy, projx+2, ' ');
@@ -475,7 +442,7 @@ void player::shoot(){
 		projx = xLoc+2;
 		dirlock = dir;
 		s=true;
-		if(isterrain(mvwinch(curwin, projy, projx))==false && isterrain(mvwinch(curwin, projy, projx-1))==false && projx<=xMax-2){
+		if(bulletterrain(mvwinch(curwin, projy, projx))==false && bulletterrain(mvwinch(curwin, projy, projx-1))==false && projx<=xMax-2){
 			mvwaddch(curwin, projy, projx-1, ' ');
 			usleep(5000);
 			display(NULL);
@@ -489,11 +456,11 @@ void player::shoot(){
 			if(j==false)
 				gravity();
 		}
-		else if(mvwinch(curwin, projy, projx+1)=='e'){
+		else if(isenemy(mvwinch(curwin, projy, projx+1))==true){
 			s=false;
 			return;
 		}
-		else if(isterrain(mvwinch(curwin, projy, projx-1))==false)
+		else if(bulletterrain(mvwinch(curwin, projy, projx-1))==false)
 			mvwaddch(curwin, projy, projx-1, ' ');
 		else{
 			mvwaddch(curwin, projy, projx-2, ' ');
@@ -501,7 +468,7 @@ void player::shoot(){
 		}
 	}
 	else if(dirlock==true && s==true){
-		if(isterrain(mvwinch(curwin, projy, projx))==false && isterrain(mvwinch(curwin, projy, projx+1))==false && projx>=2){
+		if(bulletterrain(mvwinch(curwin, projy, projx))==false && bulletterrain(mvwinch(curwin, projy, projx+1))==false && projx>=2){
 			mvwaddch(curwin, projy, projx+1, ' ');
 			usleep(5000);
 			display(NULL);
@@ -515,7 +482,7 @@ void player::shoot(){
 			if(j==false)
 				gravity();
 		}
-		else if(mvwinch(curwin, projy, projx-1)=='e'){
+		else if(isenemy(mvwinch(curwin, projy, projx-1))==true){
 			s=false;
 			return;
 		}
@@ -525,7 +492,7 @@ void player::shoot(){
 		}
 	}
 	else if(dirlock==false && s==true){
-		if(isterrain(mvwinch(curwin, projy, projx))==false && isterrain(mvwinch(curwin, projy, projx-1))==false && projx<=xMax-2){
+		if(bulletterrain(mvwinch(curwin, projy, projx))==false && bulletterrain(mvwinch(curwin, projy, projx-1))==false && projx<=xMax-2){
 			mvwaddch(curwin, projy, projx-1, ' ');
 			usleep(5000);
 			display(NULL);
@@ -539,7 +506,7 @@ void player::shoot(){
 			if(j==false)
 				gravity();
 		}
-		else if(mvwinch(curwin, projy, projx+1)=='e'){
+		else if(isenemy(mvwinch(curwin, projy, projx+1))==true){
 			s=false;
 			return;
 		}
