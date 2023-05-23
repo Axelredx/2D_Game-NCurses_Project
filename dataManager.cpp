@@ -6,7 +6,7 @@
  * saves the current map seed
  */
 
-int save_data(player* P, int Seed, string fileName)
+int save_data(player* P, int Seed, string fileName, string enemyId, basicenemy* E)
 {
 	/*
 	 * MEMO: savegame structure as follows (WIP)
@@ -43,6 +43,12 @@ int save_data(player* P, int Seed, string fileName)
 
 	dataInt= P->playeroutput(12);
 	saveFile << "jumpH#" << dataInt << endl;
+
+	saveFile << "Enemy#" << enemyId <<"/";
+	dataInt = E->enemyOutput(1);
+	saveFile << "X#" << dataInt << '/';
+	dataInt = E->enemyOutput(4);
+	saveFile << "life#" <<dataInt << "/" << endl;
 
 	saveFile.close();
 

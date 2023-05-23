@@ -5,9 +5,10 @@
 #include <ctime>
 #include <fstream>
 #include "market.hpp"
+#include "basicEnemy.hpp"
 using namespace std;
 
-int save_data(player* P, int Seed, string filename);
+int save_data(player* P, int Seed, string filename,  string enemyId, basicenemy* E);
 	/*
 	 * MEMO: savegame structure as follows (WIP)
 	 * Line1: yloc (code 0)

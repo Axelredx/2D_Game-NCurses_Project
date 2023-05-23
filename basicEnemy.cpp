@@ -460,3 +460,36 @@ void jumpingenemy::jump(int dir){
 		j=false;
 	}
 }
+
+int basicenemy::enemyOutput(int input){
+	switch(input){
+	case 0:
+		return yLoc;
+		break;
+	case 1:
+		return xLoc;
+		break;
+	case 2:
+		return projy;
+		break;
+	case 3:
+		return projx;
+		break;
+	case 4:
+		return life;
+		break;
+	case 5:
+		return s;
+		break;
+	case 6:
+		return dirlock;
+		break;
+	case 7:
+		return money;
+		break;
+	default:
+		return -1;
+		break;
+
+	}
+}

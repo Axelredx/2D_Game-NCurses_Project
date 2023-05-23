@@ -43,6 +43,7 @@ public:
     bool isterrain(char t);
     void takedamage();
     void gravity();
+	int enemyOutput(int input);
 };
 
 class jumpingenemy: public basicenemy{

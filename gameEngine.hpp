@@ -1,5 +1,4 @@
-#include "dataManager.hpp"	//includes market.hpp, which includes player.hpp and box.hpp
-#include "basicEnemy.hpp"
+#include "dataManager.hpp"	//includes basicEnem.hpp and market.hpp, which includes player.hpp and box.hpp
 
 //screen initzialization
 void initialize();
