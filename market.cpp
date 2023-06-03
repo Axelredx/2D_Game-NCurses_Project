@@ -1,24 +1,40 @@
 #include "market.hpp"
 
-bool checkCurrency(int price, player* P1){
-    if(price > (P1->money))
-    {
-    	return false;
-    }else
-    	return true;
+bool check_Currency(int price, player* player){
+    if(price > (player->money))
+        return true;
+    else
+        return false;
 }
 
-void buyHealth(player* player){
-    if(checkCurrency(player->healthPrice, player)){
+void buy_Health(player* player){
+    if(!check_Currency(player->health_Price, player)){
         player->life=player->life+1;
-        player->money=(player->money)-(player->healthPrice);
-        player->healthPrice=player->healthPrice+10;
+        player->money=(player->money)-(player->health_Price);
+        player->health_Price=player->health_Price+10;
     }
 }
-void buyJumpboost(player* player){
-    if(checkCurrency(player->jumpPrice, player)){
-        (player->salto) ++;
-        player->money=(player->money)-(player->jumpPrice);
-        player->jumpPrice=player->jumpPrice+10;
+void buy_Jumpboost(player* player){
+    if(!check_Currency(player->jump_Price, player)){
+        (player->jump_width) ++;
+        player->money=(player->money)-(player->jump_Price);
+        player->jump_Price=player->jump_Price+10;
+    }
+}
+
+void buy_MagicPotion(player* player){
+    if(!check_Currency(player->Potion_Price, player)){
+        player->life=player->life+3;
+        player->money=(player->money)-(player->Potion_Price);
+        player->Potion_Price=player->Potion_Price+10;
+    }
+}
+
+int buy_Artifact(player* player){
+    if(!check_Currency(player->Artifact_Price, player)){
+        int score =150;
+        player->life=player->life+1;
+        player->money=(player->money)-(player->Artifact_Price);
+        player->Artifact_Price=player->Artifact_Price+10;
     }
 }

@@ -10,7 +10,7 @@ class player {
         WINDOW * curwin;
 
     public:
-        int money, life, salto, healthPrice=80, jumpPrice=50;
+        int money, life, jump_width, health_Price=80, jump_Price=50, Potion_Price=120, Artifact_Price=180;
         //Costruttore della classe
         player(WINDOW * win, int y=15, int x=4, char c='P', int m=100, int l=3){
         	curwin = win;

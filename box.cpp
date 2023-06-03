@@ -2,7 +2,7 @@
 
 WINDOW* BOX::create_box(){
     WINDOW* fin= newwin(height,width,start_y,start_x);
-    box(fin, 0,0); //fin, crarattere top-bot, carattere left-right
+    box(fin, 0,0); //win, top-bot char, left-right char
     refresh();
     wrefresh(fin);
     return fin;
@@ -10,7 +10,7 @@ WINDOW* BOX::create_box(){
 
 WINDOW* BOX::modify_box(char tag[]){
     WINDOW* fin= BOX::create_box();
-    mvwprintw(fin, 0,23, tag); //muovi e stampa in finestra
+    mvwprintw(fin, 0,23, tag); 
     wrefresh(fin);
     return fin;
 }
@@ -51,14 +51,15 @@ int MENU::choice(){
 }
 
 void MARKET::draw_market(){
-    mvprintw(3,80,"////// MARKET //////");
-    mvprintw(4,80," | (Buy or )      | ");
-    mvprintw(5,80," |  ( Die! )      | ");
-    mvprintw(6,80," |        O       | ");
-    mvprintw(7,80," |       /||      | ");
-    mvprintw(8,80,"####################");
-    mvprintw(9,80,"####################");
-    mvprintw(10,80,"####################");
+    //market decorations 
+    mvprintw(20,82,"////// MARKET //////");
+    mvprintw(21,82," | (Buy or )      | ");
+    mvprintw(22,82," |  ( Die! )      | ");
+    mvprintw(23,82," |        O       | ");
+    mvprintw(24,82," |       /||      | ");
+    mvprintw(25,82,"####################");
+    mvprintw(26,82,"####################");
+    mvprintw(27,82,"####################");
     refresh();
 }
 
@@ -68,7 +69,7 @@ WINDOW* MAP::create_map(){
     mvprintw(0, 0, "mappa: %s", map_seed_str.c_str());
     mvwprintw(fin,22,1,"[]");
     mvwprintw(fin,22,width-3,"{}");
-    //buchi nella mappa
+    //map holes
     for(int i=0;i<width;i++){
         for(int j=0;j<height;j++){
             if(j>=23){
@@ -87,7 +88,7 @@ WINDOW* MAP::create_map(){
         }
     }
     
-    //scale
+    //stairs
     if(ladder_on==true){
         for(int i=0;i<width;i++){
             for(int j=0;j<height;j++){

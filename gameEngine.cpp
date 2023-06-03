@@ -1,12 +1,12 @@
 #include "gameEngine.hpp"
 typedef void * (*THREADFUNCPTR)(void *);
-//game score of player
+//player score
 int game_scr = 0;
 
 void initialize(){
     initscr(); //initialization of screen and memory
     refresh(); //refresh screen to be compatible with what is in memory
-    noecho(); //impedisce all'user di typare
+    noecho(); //prevents user to write on screen
     curs_set(false); //cursor hider
 }
 
@@ -137,22 +137,9 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 class MAP map5, class MAP map6, class MAP map7, class MAP map8,
                 class MAP map9, class MAP map10, int seed, bool new_lvl){
     srand(time(0));
-    int player_x, player_y, money, life;
 
 	//FOLLOWING: default values for creating player-class items
-	player_x=4;
-	player_y=15;
-	money=100;
-	life=3;
-	int saltoH=10;
-    int mapSeed=0;
-    /*
-	 * ultima versione del salvataggio
-	 * le righe hanno una piccola descrizione di cosa rappresenta il numero che segue nel file di salvataggio
-	 * per selezionare solo il dato, ho implementato questo insieme di operazioni
-	 * in caso in cui il dato non venisse ritrovato, ritorna un messaggio di errore e ripristina i valori predefiniti per quel dato
-	 */
-
+	int player_x=4, player_y=15, money=100, life=3, jump_w=10, mapSeed=0;
 
         ifstream savegame;
 	    string lel, dump;
@@ -221,7 +208,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 mapSeed=stoi(lel);
             }
 
-            getline(savegame, lel, '#');		//check for saving the score
+            getline(savegame, lel, '#');		//check for saving of the score
             if(lel.compare("score")==0)
             {
                 getline(savegame, lel, '\n');
@@ -239,28 +226,27 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
     }
 
     player * p = new player(map, player_y, player_x, 'P', money, life);
-        //(finestra, y da cui il personagio spawna,
-        //x da cui il personaggio spawna, icona del personaggio)
+        //(win, y spawn of player, x spawn of player, player icon)
 
-    p->salto=saltoH;
-    //sintassi: (finestra, y dello spawn del nemico, x dello spawn del nemico,
-    //              vita del nemico, icona del nemico (lasciala 'e'), soldi rilasciati alla morte)
+    p->jump_width=jump_w;
+    //sintax: (win, y spawn of enemy, x spawn of enemy,
+    //             enemy life, enemy icon, money given if defeated)
 	basicenemy * e1 = new basicenemy(map, 15, 25, 1, 'e', 50);
 
 	basicenemy * e2 = new basicenemy(map, 15, 35, 1, 'j', 50);
 
 	basicenemy * e3 = new basicenemy(map, 15, 65, 3, '<', 80);
 
-	//sintassi: (finestra, y dello spawn del nemico, x dello spawn del nemico, vita del nemico,
-    //              icona del nemico , soldi rilasciati alla morte, difficoltà del nemico)
-    //PIU IL NUMERO E' BASSO PIU E' DIFFICILE! (non usare numeri negativi; 
-    //sconsiglio di scendere sotto a 3)
+    //sintax: (win, y spawn of enemy, x spawn of enemy,
+    //             enemy life, enemy icon, money given if defeated, difficulty of enemy)
+    //Lower the number higher is the difficulty! (don't use neg. number; 
+    //seggest to not be lower than 3 
 	jumpingenemy * e4 = new jumpingenemy (map, 15, 95, 3, 'E', 100, 4);
 
 	//player and enemy initialization
 	pthread_t playerthread, enemythread;
 
-	basicenemy* enemyEntity;	//ottiene la classe padre dei nemici per salvataggi
+	basicenemy* enemyEntity;	
     basicenemy* b_e;
     jumpingenemy* j_e=jumping_enemy_randomizer(e4);
     if(j_e==NULL){
@@ -358,13 +344,27 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
 
     MENU menu(y_scr/2,x_scr/2,y_scr/4,x_scr/4,v1,v2,v3,v4);
 
-    char v5[20], v6[20], v7[20], v8[20];
+    char v5[20], v6[50], v7[50], v8[50], v9[50], v10[20], v1_power[50], v2_power[50];
         strcpy(v5,"Market");
-        strcpy(v6,"Health boost");
-        strcpy(v7,"Jump boost");
-        strcpy(v8,"Return to the game");
+        strcpy(v6,"Health boost 80$");
+        strcpy(v7,"Jump boost 50$");
+        strcpy(v8,"Magic Potion 120$");
+        strcpy(v9,"Artifact 180$");
+        strcpy(v10,"Return to the game");
+    
+    //upgrade randomized
+    int upgrade_rand=rand()%3;
+    if(upgrade_rand%2==0)
+        strcpy(v1_power,v6);
+    else
+        strcpy(v1_power,v8);
+    
+    if(upgrade_rand==1)
+        strcpy(v2_power,v9);
+    else
+        strcpy(v2_power,v7);
 
-    MARKET market(y_scr/2,x_scr/2,y_scr/4,x_scr/4,v5,v6,v7,v8);
+    MARKET market(y_scr/2,x_scr/4,y_scr/4,x_scr/4,v5,v1_power,v2_power,v10);
 
         clear();
         refresh();
@@ -409,7 +409,11 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
             market.draw_market();
             int mx=market.choice();
             if(mx==1){
-                buyHealth(p);
+                //upgrade randomized
+                if(upgrade_rand%2==0)
+                    buy_Health(p);
+                else
+                    buy_MagicPotion(p);
                 clear();
                 refresh();
                 int kek;
@@ -444,7 +448,11 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 endwin();
                 return;
             }else if(mx==2){
-                buyJumpboost(p);
+                //upgrade randomized
+                if(upgrade_rand==1)
+                    game_scr+=buy_Artifact(p);
+                else
+                    buy_Jumpboost(p);
                 clear();
                 refresh();
                 int kek;
