@@ -153,13 +153,13 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
 	 * in caso in cui il dato non venisse ritrovato, ritorna un messaggio di errore e ripristina i valori predefiniti per quel dato
 	 */
 
-	
+
         ifstream savegame;
 	    string lel, dump;
 	    savegame.open("savegame.txt");
 
         if(savegame.is_open())
-        {   
+        {
             getline(savegame, lel, '#');
             if(lel.compare("Y_loc")==0)
             {
@@ -214,13 +214,6 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 money=stoi(lel);
             }
 
-            getline(savegame, lel, '#');		//check for jumpHeight
-            if(lel.compare("jumpH")==0)
-            {
-                getline(savegame, lel, '\n');
-                saltoH=stoi(lel);
-            }
-
             getline(savegame, lel, '#');		//check for seed of Map
             if(lel.compare("map")==0)
             {
@@ -228,11 +221,11 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 mapSeed=stoi(lel);
             }
 
-            getline(savegame, lel, '#');		//check for saving of player health
-            if(lel.compare("life")==0)
+            getline(savegame, lel, '#');		//check for saving the score
+            if(lel.compare("score")==0)
             {
                 getline(savegame, lel, '\n');
-                life=stoi(lel);
+                game_scr=stoi(lel);
             }
 
 
@@ -250,21 +243,21 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
         //x da cui il personaggio spawna, icona del personaggio)
 
     p->salto=saltoH;
-    //sintassi: (finestra, y dello spawn del nemico, x dello spawn del nemico, 
+    //sintassi: (finestra, y dello spawn del nemico, x dello spawn del nemico,
     //              vita del nemico, icona del nemico (lasciala 'e'), soldi rilasciati alla morte)
 	basicenemy * e1 = new basicenemy(map, 15, 25, 1, 'e', 50);
 
-	basicenemy * e2 = new basicenemy(map, 15, 35, 1, 'e', 50);
+	basicenemy * e2 = new basicenemy(map, 15, 35, 1, 'j', 50);
 
-	basicenemy * e3 = new basicenemy(map, 15, 65, 3, 'e', 80);
+	basicenemy * e3 = new basicenemy(map, 15, 65, 3, '<', 80);
 
-	//sintassi: (finestra, y dello spawn del nemico, x dello spawn del nemico, vita del nemico, 
-    //              icona del nemico (lasciala 'e'),
-	//soldi rilasciati alla morte, difficoltà del nemico !PIU IL NUMERO 
-    //E' BASSO PIU E' DIFFICILE! (non usare numeri negativi; sconsiglio di scendere sotto a 3)
+	//sintassi: (finestra, y dello spawn del nemico, x dello spawn del nemico, vita del nemico,
+    //              icona del nemico , soldi rilasciati alla morte, difficoltà del nemico)
+    //PIU IL NUMERO E' BASSO PIU E' DIFFICILE! (non usare numeri negativi; 
+    //sconsiglio di scendere sotto a 3)
 	jumpingenemy * e4 = new jumpingenemy (map, 15, 95, 3, 'E', 100, 4);
 
-	//Inizializzazione del thread giocatore e nemici
+	//player and enemy initialization
 	pthread_t playerthread, enemythread;
 
 	basicenemy* enemyEntity;	//ottiene la classe padre dei nemici per salvataggi
@@ -288,7 +281,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
 		pthread_create(&playerthread, NULL, (THREADFUNCPTR) &player::display, p);
 		//elabouring thread
 		pthread_join(playerthread, NULL);
-        
+
         //Enemy thread creation
         if(j_e==NULL){
             pthread_create(&enemythread, NULL, (THREADFUNCPTR) &basicenemy::behaviour, b_e);
@@ -323,7 +316,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
         //exit if you press "Esc"
 	}while(p->move()!=27);
 
-    //entrance in new level 
+    //entrance in new level
     if(p->playeroutput(1)>=116){
         clear();
         refresh();
@@ -335,10 +328,10 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                                         map7,map8,map9,map10,seed_generated,false);
         if (j_e==NULL)
         	{
-        		save_data(p, seed_generated, "savegame.txt","b_e", b_e);
+        		save_data(p, seed_generated, game_scr, "savegame.txt","b_e", b_e);
         	}else
         	{
-        		save_data(p, seed_generated, "savegame.txt","j_e", j_e);
+        		save_data(p, seed_generated, game_scr, "savegame.txt","j_e", j_e);
         	}
         game_flow(y_scr,x_scr,new_map,box,map1,map2,map3,map4,map5,
                     map6,map7,map8,map9,map10,seed_generated,true);
@@ -371,7 +364,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
         strcpy(v7,"Jump boost");
         strcpy(v8,"Return to the game");
 
-    MENU market(y_scr/2,x_scr/2,y_scr/4,x_scr/4,v5,v6,v7,v8);
+    MARKET market(y_scr/2,x_scr/2,y_scr/4,x_scr/4,v5,v6,v7,v8);
 
         clear();
         refresh();
@@ -383,10 +376,10 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 int kek;
                 if (j_e==NULL)
                 {
-                	kek=save_data(p, seed, "savegame.txt","b_e", b_e);
+                	kek=save_data(p, seed, game_scr, "savegame.txt","b_e", b_e);
                 }else
                 {
-                	kek=save_data(p, seed, "savegame.txt","j_e", j_e);
+                	kek=save_data(p, seed, game_scr, "savegame.txt","j_e", j_e);
                 }
             if(kek==1){
                 clear();
@@ -413,7 +406,8 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
             return;
     }else if(cx==2){
             //accesso al market
-           int mx=market.choice();
+            market.draw_market();
+            int mx=market.choice();
             if(mx==1){
                 buyHealth(p);
                 clear();
@@ -421,10 +415,10 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 int kek;
                 if (j_e==NULL)
                 {
-                	kek=save_data(p, seed, "savegame.txt","b_e", b_e);
+                	kek=save_data(p, seed, game_scr, "savegame.txt","b_e", b_e);
                 }else
                 {
-                	kek=save_data(p, seed, "savegame.txt","j_e", j_e);
+                	kek=save_data(p, seed, game_scr, "savegame.txt","j_e", j_e);
                 }
                 if(kek==1){
                 	clear();
@@ -456,10 +450,10 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 int kek;
                 if (j_e==NULL)
                 {
-                	kek=save_data(p, seed, "savegame.txt","b_e", b_e);
+                	kek=save_data(p, seed, game_scr, "savegame.txt","b_e", b_e);
                 }else
                 {
-                	kek=save_data(p, seed, "savegame.txt","j_e", j_e);
+                	kek=save_data(p, seed, game_scr, "savegame.txt","j_e", j_e);
                 }
                 if(kek==1){
                 	clear();
@@ -494,10 +488,10 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 int kek;
                 if (j_e==NULL)
                 {
-                	kek=save_data(p, seed, "savegame.txt","b_e", b_e);
+                	kek=save_data(p, seed, game_scr, "savegame.txt","b_e", b_e);
                 }else
                 {
-                	kek=save_data(p, seed, "savegame.txt","j_e", j_e);
+                	kek=save_data(p, seed, game_scr, "savegame.txt","j_e", j_e);
                 }
                 if(kek==1){
             		clear();
@@ -528,12 +522,12 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
         int kek;
         if (j_e==NULL)
         {
-        	kek=save_data(p, seed, "savegame.txt","b_e", b_e);
+        	kek=save_data(p, seed, game_scr, "savegame.txt","b_e", b_e);
         }else
         {
-        	kek=save_data(p, seed, "savegame.txt","j_e", j_e);
+        	kek=save_data(p, seed, game_scr, "savegame.txt","j_e", j_e);
         }
-    	if(kek==1)
+    	if(kek!=-1)
     	{
     		clear();
     		mvprintw(0, 0, "game saved");

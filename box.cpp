@@ -1,5 +1,4 @@
 #include "box.hpp"
-#include <cstring>
 
 WINDOW* BOX::create_box(){
     WINDOW* fin= newwin(height,width,start_y,start_x);
@@ -49,6 +48,18 @@ int MENU::choice(){
         }
     }
     return exit_value;
+}
+
+void MARKET::draw_market(){
+    mvprintw(3,80,"////// MARKET //////");
+    mvprintw(4,80," | (Buy or )      | ");
+    mvprintw(5,80," |  ( Die! )      | ");
+    mvprintw(6,80," |        O       | ");
+    mvprintw(7,80," |       /||      | ");
+    mvprintw(8,80,"####################");
+    mvprintw(9,80,"####################");
+    mvprintw(10,80,"####################");
+    refresh();
 }
 
 WINDOW* MAP::create_map(){
@@ -117,7 +128,7 @@ WINDOW* MAP::create_map(){
 
     //decorations
     if(cloud==true){
-        //nuvole
+        //clouds
         mvwprintw(fin,3,7,".°(||)°.");
         mvwprintw(fin,4,6,"((((||))))");
         mvwprintw(fin,5,6,"((((||))))");
@@ -132,10 +143,22 @@ WINDOW* MAP::create_map(){
         mvwprintw(fin,4,62,"((((||))))");
         mvwprintw(fin,5,62,"((((||))))");
         mvwprintw(fin,6,63,"'°(||)°'");
+    }else if(cloud == false && day == false){
+        //stars
+        mvwprintw(fin,3,90,"*");
+        mvwprintw(fin,6,50,"*");
+        mvwprintw(fin,8,30,"*");
+        mvwprintw(fin,10,80,"*");
+    }else if (cloud ==false && day ==true){
+        //pigeons
+        mvwprintw(fin,3,90,"^-^");
+        mvwprintw(fin,6,50,"^-^");
+        mvwprintw(fin,8,30,"^-^");
+        mvwprintw(fin,10,80,"^-^");       
     }
 
     if(day==true){
-        //sole
+        //sun
         mvwprintw(fin,2,102,">ççç<");
         mvwprintw(fin,3,100,">ççççççç<");
         mvwprintw(fin,4,99,">ççççççççç<");
@@ -143,7 +166,7 @@ WINDOW* MAP::create_map(){
         mvwprintw(fin,6,100,">ççççççç<");
         mvwprintw(fin,7,102,">ççç<");
     }else{
-        //luna
+        //moon
         mvwprintw(fin,2,100,"+,");
         mvwprintw(fin,3,101,"]!}");
         mvwprintw(fin,4,101,";çç}");

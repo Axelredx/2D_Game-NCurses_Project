@@ -52,7 +52,7 @@ int main(int argc, char** argv){
         return 0;
     }else if(c==2){
         //start game from a gamefile
-        mvprintw(0, 0, "Press a key to start the Game from the Game-Save!");
+        mvprintw(0, 0, "Press a key to start the Game from a Save-File!");
     	getch();
         clear();
         int seed_generated=0;

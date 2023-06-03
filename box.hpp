@@ -32,6 +32,12 @@ class MENU : public BOX{
     int choice();
 };
 
+class MARKET : public MENU{
+    public:
+    MARKET(int h, int w, int y, int x, char tag[], char tag2[], char tag3[], char tag4[]) : MENU(h, w, y, x, tag, tag2, tag3, tag4){}
+    void draw_market();
+};
+
 class MAP: public BOX{
     protected:
     bool ladder_on, holes_on, two_holes, two_ladders, cloud, day;

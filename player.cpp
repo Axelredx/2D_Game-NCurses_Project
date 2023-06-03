@@ -1,11 +1,10 @@
-
 #include "player.hpp"
 
 
 
 //ritorna true se il char in input è considerabile terreno, false atrimenti
 bool player::isterrain(char t){
-	if(t=='#' || t=='-' || t=='|' || t=='e')
+	if(t=='#' || t=='-' || t=='|' || t=='e'|| t=='{' || t=='[' || t==']' || t=='}')
 		return true;
 	else
 		return false;

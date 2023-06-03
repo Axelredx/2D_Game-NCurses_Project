@@ -51,7 +51,8 @@ protected:
 	bool j=false;
 	int difficulty;
 public:
-	jumpingenemy(WINDOW * win, int y=20, int x=20, int l=3, char e='E', int m=300, int d=4) : basicenemy(win, y, x, l, e, m){	j=false;
+	jumpingenemy(WINDOW * win, int y=20, int x=20, int l=3, char e='E', int m=300, int d=4) : basicenemy(win, y, x, l, e, m){	
+		j=false;
 		difficulty=d;
 	}
 	void mvup();

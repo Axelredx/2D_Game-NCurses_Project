@@ -5,8 +5,7 @@
  * saved games data, and store position, life and money of the player
  * saves the current map seed
  */
-
-int save_data(player* P, int Seed, string fileName, string enemyId, basicenemy* E)
+int save_data(player* P, int Seed, int game_scr, string fileName, string enemyID, basicenemy* E)
 {
 	/*
 	 * MEMO: savegame structure as follows (WIP)
@@ -20,41 +19,61 @@ int save_data(player* P, int Seed, string fileName, string enemyId, basicenemy* 
 	 *
 	 */
 
-
-	ofstream saveFile;	//crea variabile di alloggio del file
-	saveFile.open(fileName);	//apre (o crea se non esiste) il file
 	int dataInt;
+	if(!filesystem::exists(fileName)){		//se il file non esiste, crea un nuovo file
 
-	dataInt=P->playeroutput(0);	//get_y
-	saveFile <<"Y_loc#"<<dataInt ;
-	saveFile << endl;
+		ofstream log;
+		log.open("logFile.txt");
 
-	dataInt=P->playeroutput(1);	//get_x
-	saveFile << "X_loc#"<<dataInt << endl;
+		log << "savegame not located, writing new file" << endl;
 
-	dataInt = P->playeroutput(4);	//gemt_life
-	saveFile <<"life#" <<dataInt << endl;
+		ofstream saveFile;	//crea variabile di appoggio del file
+		saveFile.open(fileName);	//apre (o crea se non esiste) il file
 
-	dataInt = P->playeroutput(11);	//get_credits
-	saveFile <<"credits#" <<dataInt << endl;
+		dataInt=P->playeroutput(0);	//get_y
+		saveFile <<"Y_loc#"<<dataInt ;
+		saveFile << endl;
 
-	dataInt = Seed;					//get_mapSeed
-	saveFile <<"map#"<< dataInt << endl;
+		dataInt=P->playeroutput(1);	//get_x
+		saveFile << "X_loc#"<<dataInt << endl;
 
-	dataInt= P->playeroutput(12);
-	saveFile << "jumpH#" << dataInt << endl;
+		dataInt = P->playeroutput(4);	//gemt_life
+		saveFile <<"life#" <<dataInt << endl;
 
-	saveFile << "Enemy#" << enemyId <<"/";
-	dataInt = E->enemyOutput(1);
-	saveFile << "X#" << dataInt << '/';
-	dataInt = E->enemyOutput(4);
-	saveFile << "life#" <<dataInt << "/" << endl;
+		dataInt = P->playeroutput(11);	//get_credits
+		saveFile <<"credits#" <<dataInt << endl;
 
-	saveFile.close();
+		dataInt = Seed;					//get_mapSeed
+		saveFile <<"map#"<< dataInt << endl;
 
-	return 1;
+		saveFile <<"score#" <<game_scr << endl;
+
+		saveFile << endl;
+
+		saveFile << "-- ENEMY LOG --" << endl;
+
+
+		string kek;
+		kek="lvl#"+to_string(Seed)+"/Enemy#"+enemyID+"/X#"+to_string(E->enemyOutput(1))+"/life#"+to_string(E->enemyOutput(4))+"/";
+		saveFile << kek;
+		//in questo caso il funzionamento è un po' scuffed, ma funziona
+		//in quanto buon informatico, finché funziona, non si tocca
+
+		saveFile.close();
+		log.close();
+		return 1;
+	}else
+	{
+		copyFile(fileName, "temp.txt");
+
+		//remove(fileName.c_str());		//it works trust me
+
+		enemyDataSave(fileName, "temp.txt", Seed, enemyID, E);
+
+		return 2;
+	}
+	return -1;
 }
-//void read_data(){};
 
 
 void copyFile(string oldFileName, string newFileName)
@@ -80,7 +99,7 @@ void copyFile(string oldFileName, string newFileName)
 
 
 
-void changeData_basic(int itemNum, string content)
+void changeData_basic(int itemNum, string content)	//cambia il valore di uno specifico dato NO NEMICI
 {
 	/*
 	 * ITA: itemNum corrisponde al dato che si vuole modificare; la funzione naviga 1 volta il file fino alla riga corretta, e modifica il dato
@@ -148,7 +167,7 @@ void changeData_basic(int itemNum, string content)
 	}
 }
 
-int obtain_data(int kek)
+int obtain_data(int kek)	//ottieni il valore intero di uno specifico dato NO NEMICI
 {
 	string lookOut;
 	switch (kek){
@@ -196,4 +215,84 @@ int obtain_data(int kek)
 		return stoi(uwu);
 
 	return -1;
+}
+
+int enemyDataSave (string fileName, string tempFileName,  int seed, string enemyID, basicenemy* E)	//cambia il valore di uno specifico dato NO NEMICI
+{
+	/*
+	 * La funzione deve copiare riga per riga il tempFile, sul nuovo file di salvataggio
+	 * La differenza è che analizza le righe una ad una per cercare informazioni sul livello attuale e sul suo nemico
+	 * non appena trova una riga corrispondente al livello nel quale siamo, aggiorna le info del nemico con la situazione attuale.
+	 * invece di copiare la riga quindi, la modifica
+	 * se non viene trovata nessuna riga precedente riguardante il livello attuale, crea una nuova riga
+	 */
+	ifstream iFile; 	//file dal quale leggo
+	ofstream oFile;		//file sul quale scrivo
+	iFile.open(tempFileName);
+	oFile.open(fileName);
+	string lookOut="lvl#"+to_string(seed);
+	bool found=false;
+
+	ofstream logFile;
+	logFile.open("logFile.txt");
+
+	if(lookOut.compare("")==0)
+	{
+		logFile << "no lookout in enemyDataSave" << endl;
+		//cout << "error,  current lookOut variable is invalid" << endl;
+	}else
+	{
+
+		logFile << "current lookout is: " << lookOut << endl;
+
+		string kek;
+		int linecounter=0;
+		int printcounter=0;
+
+		while(!iFile.eof() && linecounter<100)
+		{
+
+			getline(iFile,kek);
+			linecounter++;
+
+			if( string::npos != (kek.find(lookOut)))
+			{
+				logFile << "lookout has been found, modifying current line" << endl;
+
+				found = true;
+				kek="";
+				//azzero per sicurezza
+				kek="lvl#"+to_string(seed)+"/Enemy#"+enemyID+"/X#"+to_string(E->enemyOutput(1))+"/life#"+to_string(E->enemyOutput(4))+"/";
+
+				logFile << "modified kek string is: " << kek;
+			}
+			oFile << kek ;
+
+			if(kek.compare("") != 0)
+				oFile << endl;
+
+			printcounter++;
+		}
+
+		if(found==false)	//add new line if no previous data exists
+		{
+			logFile << "having not found the enemy data, a new line of data will be written" << endl;
+
+			kek="lvl#"+to_string(seed)+"/Enemy#"+enemyID+"/X#"+to_string(E->enemyOutput(1))+"/life#"+to_string(E->enemyOutput(4))+"/";
+			oFile << kek << endl;
+
+			logFile << "kek:" << kek << endl;
+		}
+
+		oFile.close();
+		iFile.close();
+		logFile.close();
+		//elimina vecchio file
+		//crea una funzione per la copia di un file
+		//richiamala per ricopiare saveGame
+		//elimina la copia del file;
+
+		remove(tempFileName.c_str());
+	}
+	return 0;
 }
