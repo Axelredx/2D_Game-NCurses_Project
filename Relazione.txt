@@ -1,0 +1,88 @@
+"THE GAME" un progetto di Alex Rossi mat:0001089916, Alessandro D'Ambrosio mat: 0001099122, Luca Rimondi mat: 0001078751; 
+Alma Mater Studiorum, University of Bologna, Italy.
+
+-Informazioni generali:
+"THE GAME" è un videogioco platform 2D per terminale, sviluppato in C++, dove si vestono i panni
+di un eroe che deve sopravvivere giorno e notte ad attacchi di nemici accumolando il punteggio più
+alto possibile.
+
+-Informazioni riguardanti scelte di progettuali:
+
+File main.cpp:
+In questo file si trovano l'inizializzazione degli oggetti più importante del gioco come le 10
+mappe e il menu di base.
+Inoltre si trovano alcune importanti funzioni che servono a settare valori di base del gioco,
+impedire al giocatore di causare comportamenti anomali durante l'esecuzione del programma 
+(la funzione initialize() ad esempio nasconde il cursore del mouse e non permette di scrivere sul
+terminale con la tastiera in-game) e la visualizzazione della schermata d'introduzione (data 
+dalla funzione pregame()).
+Infine sono presenti le funzionalità di choice(), che permette il corretto funzionamento del Menu
+iniziale, la quale permette di scegliere tra: iniziare una nuova partita (opzione 1), decidere di 
+riprendere a giocare da un game-file pre-esistente (opzione 2) o uscire direttamente dal gioco 
+(opzione 3).
+
+File gameEngine.cpp/gameEngine.hpp:
+In questo file si trovano le funzioni che permettono di gestire la logica e l'avanzamento di livello
+dell'effettivo gioco.
+Per quanto riguada la generazione dei livelli map_randomizer() si occupa della generazione casuale
+di un seed, attraverso la funzione srand() se il valore next_seed è 'false', che verrà utilizzato
+per generare la mappa associata da cui inizierà il gioco, altrimenti se next_seed è 'true' allora
+viene restituito il seed della mappa successiva.
+La funzione map_generator() si occupa di restituire il puntatore alla mappa a cui fa riferimento 
+il seed immesso. 
+La funzione più importante del file è game_flow(), in essa vi è l'effettivo svolgimento della
+partita in-game, l'avanzamento di livello e l'accesso al market di gioco.
+Generalmnte il suo funzionamento è il seguente: in essa vengono istanziati sia i nemici che il 
+player (di quest'ultimi però se ne seleziona una tipologia casualmente così da essere inserita
+nel livello corrente), i quali vengono inseriti in un ciclo che continua fino a quando non si 
+soddisfa una di queste tre condizioni: 
+1. le vite del player scendono al valore 0 (il giocatore 'muore' ed è quindi 'forzato' a 
+terminare il gioco attraverso death_screen()); 
+2. il player ha raggiunto il punto massimo raggiungible nel livello ed è quindi pronto a passare 
+al livello successivo (in questo caso si va ad aggiornare seed e puntatore della mappa, infine 
+viene richiamata ricorsivamente game_flow()). L'avanzamento di livello viene gestito come la 
+struttura dati dello STACK, infatti si mettono in coda di volta in volta livelli, utilizzando
+sempre l'ultimo livello inserito. In caso di sconfitta o uscita dal gioco lo STACK si svota
+completamente;
+3. si accede al menu di pausa dove si può decidere di riprendere la partita dal punto in cui si 
+è interrotta, accedere al market del gioco per acquistare potenziamenti o salvare la partita e 
+uscire dal gioco.
+Prima di entrare nel ciclo però viene sempre fatto un controllo per vedere se bisogna settare dei 
+valori seguendo un file pre-esistente salvato o se invece impostare valori di base semi-casuali.
+
+-File market.cpp/market.hpp:
+In questo file troviamo funzioni che regolano la logica e controllano se è possibile effettuare 
+un acquisto o meno (check_Currency()).
+Le funzioni buy_Health(), buy_Jumpboost(), buy_MagicPotion(), buy_Artifact() permettono l'acquisto
+dei corrispettivi potenziamenti nel caso si soddisfano le condizioni di check_Currency(), le quali
+vanno a modificare i parametri di salto, vita e SCORE del player.
+I potenziamenti nel market vengono generati semi-casualmente: ogni volta che si accede al negozio
+si trova la possibilità di acquistare due potenziamenti (su quattro totali) che vengono di volta in 
+volta mostrati a rotazione (la gestione della possibilità di comprare ogni volta potenziamenti 
+differenti viene gestita in game_flow() attraverso la funzione srand()).
+
+-box.cpp/box.hpp:
+In questo file si trovano tutte le funzioni che vengono utilizzate per disegnare a schermo ciò che
+si può vedere nel gioco.
+In esso è centrale la caratteristica di ereditarietà delle classi: la classe BOX è la classe padre
+necessaria per disegnare sul terminale il quadrato generale sia di gioco che di menu;
+la classe MENU è figlia di BOX ed aggiunge la funzione choice() che perette la possibilità di 
+scelta tra le varie voci di menu, il suo funionamento è il seguente: viene inizializzato un ciclo
+che termina solo quando il giocatore ha effettuato una scelta tra 3 opzioni disponibili e viene 
+restituito un valore intero, da 1 a 3, in base all'opzione selezionta.
+MARKET è classe figlia di MENU ed aggiunge attraverso draw_market() abbellimenti estetici al 
+market.
+MAP è classe figlia di BOX ed è responsabile di disegnare la mappa in base ai parametri inseriti
+nell'istanziamento della classe: ladder_on (implica la presenza di scale nella mappa), 
+holes_on (implica la presenza di buchi nella mappa), two_holes (sono presenti due buchi nella
+mappa), two_ladders (sono presenti due scale nella mappa), cloud (vengono disegnate delle nuvole
+nella mappa), day (se 'true' viene disegnato un sole per indicare il giorno, altrimenti viene
+disegnata la luna per indicare la notte), x1_hole_start (indica dove inizia il primo buco della 
+mappa), x1_hole_finish (indica dove finisce il primo buco della  mappa), x2_hole_start (indica 
+dove inizia il secondo buco della mappa), x2_hole_finish (indica dove inizia il secondo buco della 
+mappa).
+
+
+
+
+
