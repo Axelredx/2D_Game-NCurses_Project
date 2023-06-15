@@ -135,7 +135,8 @@ WINDOW* map_generator(class MAP map1, class MAP map2, class MAP map3, class MAP 
 void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 class MAP map1, class MAP map2, class MAP map3, class MAP map4,
                 class MAP map5, class MAP map6, class MAP map7, class MAP map8,
-                class MAP map9, class MAP map10, int seed, bool new_lvl){
+                class MAP map9, class MAP map10, int seed, bool new_lvl, 
+                bool last_lvl, bool first_lvl){
     srand(time(0));
 
 	//FOLLOWING: default values for creating player-class items
@@ -221,7 +222,12 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
 
     //set position of player if there was savefile and proceed in a new level
     if(new_lvl==true){
-        player_x=4;
+        player_x=6;
+	    player_y=22;
+    }
+
+    if(last_lvl==true){
+        player_x=114;
 	    player_y=22;
     }
 
@@ -260,7 +266,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
     bool dead_enemy=false;
 	do{
         //brak if life below 0 or if player is prepared to go to next lvl
-        if(p->life<=0 || p->playeroutput(1)>116)
+        if(p->life<=0 || p->playeroutput(1)>116 || p->playeroutput(1)<4)
             break;
 
 		//Player thread creation
@@ -320,9 +326,28 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
         		save_data(p, seed_generated, game_scr, "savegame.txt","j_e", j_e);
         	}
         game_flow(y_scr,x_scr,new_map,box,map1,map2,map3,map4,map5,
-                    map6,map7,map8,map9,map10,seed_generated,true);
+                    map6,map7,map8,map9,map10,seed_generated,true,false,false);
         endwin();
         return;
+    }
+
+    //entrance last level
+    if(p->playeroutput(1)<4){
+        clear();
+        refresh();
+        WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
+                                            map7,map8,map9,map10,seed,false);
+        if (j_e==NULL)
+        	{
+        		save_data(p, seed, game_scr, "savegame.txt","b_e", b_e);
+        	}else
+        	{
+        		save_data(p, seed, game_scr, "savegame.txt","j_e", j_e);
+        	}
+            game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
+                        map6,map7,map8,map9,map10,seed,false,true,first_lvl);
+            endwin();
+            return;
     }
 
     //death of player
@@ -369,7 +394,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
         clear();
         refresh();
 
-        int cx=menu.choice();
+    int cx=menu.choice();
     if(cx==1){
             clear();
             refresh();
@@ -401,11 +426,11 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
             WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
                                             map7,map8,map9,map10,seed,false);
             game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
-                        map6,map7,map8,map9,map10,seed,false);
+                        map6,map7,map8,map9,map10,seed,false,false,first_lvl);
             endwin();
             return;
     }else if(cx==2){
-            //accesso al market
+            //market access
             market.draw_market();
             int mx=market.choice();
             if(mx==1){
@@ -444,7 +469,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
                                                 map7,map8,map9,map10,seed,false);
                 game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
-                            map6,map7,map8,map9,map10,seed,false);
+                            map6,map7,map8,map9,map10,seed,false,false,first_lvl);
                 endwin();
                 return;
             }else if(mx==2){
@@ -483,7 +508,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
                                                 map7,map8,map9,map10,seed,false);
                 game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
-                            map6,map7,map8,map9,map10,seed,false);
+                            map6,map7,map8,map9,map10,seed,false,false,first_lvl);
                 endwin();
                 return;
             }else{
@@ -521,7 +546,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
             WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
                                             map7,map8,map9,map10,seed,false);
             game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
-                        map6,map7,map8,map9,map10,seed,false);
+                        map6,map7,map8,map9,map10,seed,false,false,first_lvl);
             endwin();
             return;
             }

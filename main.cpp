@@ -88,7 +88,7 @@ int main(int argc, char** argv){
                                         map7,map8,map9,map10,seed_generated,false);
 
         game_flow(y_scr,x_scr,map_used,pre_box,map1,map2,map3,map4,map5,map6,map7,
-                    map8,map9,map10,seed_generated,false);
+                    map8,map9,map10,seed_generated,false,false,true);
     }else{
         //new game
     	clear();
@@ -100,7 +100,7 @@ int main(int argc, char** argv){
                                         map7,map8,map9,map10,seed_generated,false);
 
         game_flow(y_scr,x_scr,map_used,pre_box,map1,map2,map3,map4,map5,map6,map7,
-                    map8,map9,map10,seed_generated,false);
+                    map8,map9,map10,seed_generated,false,false,true);
     }
     endwin(); //memory deallocation
     return 0;
