@@ -266,7 +266,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
     bool dead_enemy=false;
 	do{
         //brak if life below 0 or if player is prepared to go to next lvl
-        if(p->life<=0 || p->playeroutput(1)>116 || p->playeroutput(1)<4)
+        if(p->life<=0 || p->playeroutput(1)>116 || (p->playeroutput(1)<4 && !first_lvl))
             break;
 
 		//Player thread creation
@@ -332,9 +332,13 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
     }
 
     //entrance last level
-    if(p->playeroutput(1)<4){
+    if(p->playeroutput(1)<4 && !first_lvl){
         clear();
         refresh();
+        if(seed==1)
+            seed=10;
+        else    
+            seed=seed-1;
         WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
                                             map7,map8,map9,map10,seed,false);
         if (j_e==NULL)
