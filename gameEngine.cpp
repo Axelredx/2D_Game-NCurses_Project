@@ -375,10 +375,10 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
 
     char v5[20], v6[50], v7[50], v8[50], v9[50], v10[20], v1_power[50], v2_power[50];
         strcpy(v5,"Market");
-        strcpy(v6,"Health boost 80$");
-        strcpy(v7,"Jump boost 50$");
-        strcpy(v8,"Magic Potion 120$");
-        strcpy(v9,"Artifact 180$");
+        strcpy(v6,"Health boost 80$+");
+        strcpy(v7,"Jump boost 50$+");
+        strcpy(v8,"Magic Potion 120$+");
+        strcpy(v9,"Artifact 180$+");
         strcpy(v10,"Return to the game");
     
     //upgrade randomized
