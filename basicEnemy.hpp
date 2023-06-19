@@ -7,6 +7,7 @@ protected:
 	int yLoc, xLoc, yMax, xMax, projy, projx, dirlock;
 	bool s;
 	char enemy;
+	int enemyID;
 	WINDOW * curwin;
 public:
 	int life, money;
@@ -19,6 +20,8 @@ public:
 		life=l;
 		enemy=e;
 		money=m;
+
+		enemyID=(int)e;
 
 		//Indica se si sta sparando un proiettile
 		s=false;
@@ -51,7 +54,7 @@ protected:
 	bool j=false;
 	int difficulty;
 public:
-	jumpingenemy(WINDOW * win, int y=20, int x=20, int l=3, char e='E', int m=300, int d=4) : basicenemy(win, y, x, l, e, m){	
+	jumpingenemy(WINDOW * win, int y=20, int x=20, int l=3, char e='E', int m=300, int d=4) : basicenemy(win, y, x, l, e, m){
 		j=false;
 		difficulty=d;
 	}
@@ -62,13 +65,12 @@ public:
 	int bulletfinder();
     void jump(int dir);
 	void* behaviour(void*);
-    void takedamage();
 
 };
 
 //Prende in input tre basicenemy e ne rilascia uno casualmente
 basicenemy* basic_enemy_randomizer (basicenemy* e1, basicenemy* e2, basicenemy* e3);
 
-//Una possibilità su quattro esca jumping enemy, nel caso esca, rilascia in output e, 
+//Una possibilità su quattro esca jumping enemy, nel caso esca, rilascia in output e,
 //in caso cotrario rilascia NULL
 jumpingenemy* jumping_enemy_randomizer (jumpingenemy* e);

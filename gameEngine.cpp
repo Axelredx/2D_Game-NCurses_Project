@@ -1,16 +1,22 @@
 #include "gameEngine.hpp"
 typedef void * (*THREADFUNCPTR)(void *);
-//player score
+//player game score
 int game_scr = 0;
+
+ofstream LOGFILE;
 
 void initialize(){
     initscr(); //initialization of screen and memory
     refresh(); //refresh screen to be compatible with what is in memory
-    noecho(); //prevents user to write on screen
+    noecho(); //prevents writing on screen
     curs_set(false); //cursor hider
+
+    LOGFILE.open("LOGFILE.txt");
+    LOGFILE << "INITIALIZING" << endl;
 }
 
 void pregame(class BOX box, int y_scr, int x_scr){
+	LOGFILE << "PREGAME PHASE BEGINNING" << endl;
     WINDOW* fin=box.create_box();
     mvwprintw(fin,y_scr/4,(x_scr/4)-3,"THE GAME");
     mvwprintw(fin,(y_scr/4)+1,(x_scr/4)-10,"press a key to start");
@@ -18,11 +24,13 @@ void pregame(class BOX box, int y_scr, int x_scr){
     wrefresh(fin);
     getch();
     clear();
+    LOGFILE << "PREGAME PHASE: COMPLETE" << endl;
 }
 
 void death_screen(class BOX box, int y_scr, int x_scr, class MAP map1, class MAP map2, class MAP map3, class MAP map4,
                        class MAP map5, class MAP map6, class MAP map7, class MAP map8,
                        class MAP map9, class MAP map10, int seed){
+	LOGFILE << "DEATHSCREEN PROCESS BEGINNING" << endl;
     WINDOW* fin=box.create_box();
     mvwprintw(fin,y_scr/4,(x_scr/4)-4,"YOU DIED");
     mvwprintw(fin,(y_scr/4)+1,(x_scr/4)-6,"Your SCORE: %d", game_scr);
@@ -32,6 +40,7 @@ void death_screen(class BOX box, int y_scr, int x_scr, class MAP map1, class MAP
     getch();
     clear();
     return;
+    LOGFILE << "DEATHSCREEN PROCESS ENDED WITHOUT PROBLEMS" << endl;
 }
 
 int map_randomizer(class MAP map1, class MAP map2, class MAP map3, class MAP map4,
@@ -135,12 +144,23 @@ WINDOW* map_generator(class MAP map1, class MAP map2, class MAP map3, class MAP 
 void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 class MAP map1, class MAP map2, class MAP map3, class MAP map4,
                 class MAP map5, class MAP map6, class MAP map7, class MAP map8,
-                class MAP map9, class MAP map10, int seed, bool new_lvl, 
-                bool last_lvl, bool first_lvl){
+                class MAP map9, class MAP map10, int seed, bool new_lvl, bool last_lvl, bool first_lvl ){
+	LOGFILE << "NEW ISTANCE OF GAMEFLOW BEGINNING" << endl;
     srand(time(0));
+    int player_x, player_y, money, life, jump_w=10, mapSeed = 0;
 
 	//FOLLOWING: default values for creating player-class items
-	int player_x=4, player_y=15, money=100, life=3, jump_w=10, mapSeed=0;
+	player_x=4;
+	player_y=15;
+	money=100;
+	life=3;
+    /*
+	 * ultima versione del salvataggio
+	 * le righe hanno una piccola descrizione di cosa rappresenta il numero che segue nel file di salvataggio
+	 * per selezionare solo il dato, ho implementato questo insieme di operazioni
+	 * in caso in cui il dato non venisse ritrovato, ritorna un messaggio di errore e ripristina i valori predefiniti per quel dato
+	 */
+
 
         ifstream savegame;
 	    string lel, dump;
@@ -209,7 +229,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 mapSeed=stoi(lel);
             }
 
-            getline(savegame, lel, '#');		//check for saving of the score
+            getline(savegame, lel, '#');		//check for saving the score
             if(lel.compare("score")==0)
             {
                 getline(savegame, lel, '\n');
@@ -220,52 +240,91 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
             savegame.close();
 	    }
 
+        LOGFILE << "player data succesfully retrieved" << endl;
+
     //set position of player if there was savefile and proceed in a new level
     if(new_lvl==true){
-        player_x=6;
-	    player_y=22;
+        player_x = 4;
+	    player_y = 22;
     }
 
-    if(last_lvl==true){
-        player_x=114;
-	    player_y=22;
+    if(last_lvl == true){
+    	player_x = 114;
+    	player_y = 22;
     }
 
     player * p = new player(map, player_y, player_x, 'P', money, life);
-        //(win, y spawn of player, x spawn of player, player icon)
+        //(finestra, y da cui il personagio spawna,
+        //x da cui il personaggio spawna, icona del personaggio)
 
-    p->jump_width=jump_w;
-    //sintax: (win, y spawn of enemy, x spawn of enemy,
-    //             enemy life, enemy icon, money given if defeated)
+    p->jump_width = jump_w;
+    //sintassi: (finestra, y dello spawn del nemico, x dello spawn del nemico,
+    //              vita del nemico, icona del nemico (lasciala 'e'), soldi rilasciati alla morte)
 	basicenemy * e1 = new basicenemy(map, 15, 25, 1, 'e', 50);
 
 	basicenemy * e2 = new basicenemy(map, 15, 35, 1, 'j', 50);
 
 	basicenemy * e3 = new basicenemy(map, 15, 65, 3, '<', 80);
 
-    //sintax: (win, y spawn of enemy, x spawn of enemy,
-    //             enemy life, enemy icon, money given if defeated, difficulty of enemy)
-    //Lower the number higher is the difficulty! (don't use neg. number; 
-    //seggest to not be lower than 3 
+	//check per vedere se il nemico è già stato avvistato in passato
+
+	//sintassi: (finestra, y dello spawn del nemico, x dello spawn del nemico, vita del nemico,
+    //              icona del nemico , soldi rilasciati alla morte, difficoltà del nemico)
+    //PIU IL NUMERO E' BASSO PIU E' DIFFICILE! (non usare numeri negativi;
+    //sconsiglio di scendere sotto a 3)
 	jumpingenemy * e4 = new jumpingenemy (map, 15, 95, 3, 'E', 100, 4);
 
 	//player and enemy initialization
 	pthread_t playerthread, enemythread;
+	basicenemy* b_e;
+	jumpingenemy* j_e=jumping_enemy_randomizer(e4);
 
-	basicenemy* enemyEntity;	
-    basicenemy* b_e;
-    jumpingenemy* j_e=jumping_enemy_randomizer(e4);
-    if(j_e==NULL){
-    	b_e=basic_enemy_randomizer(e1,e2,e3);
-    	enemyEntity= b_e;
-    }else
-    	enemyEntity= j_e;
+	basicenemy* enemyEntity;	//ottiene la classe padre dei nemici per salvataggi
+
+	LOGFILE << "call to obtain_data for creation of an enemy entity (currentyl jumped)" << endl;
+	/*if(obtain_data(2, seed) > 0 && obtain_data(1, seed) != -6)	//controlla se esistono dati riguardanti il nemico del livello
+	{
+		if(obtain_data(4, seed) == (int)'E')				//se il nemico è un Jumping Enemy
+		{
+			enemyEntity = new jumpingenemy (map, 15, obtain_data(1, seed) , obtain_data(2, seed), 'E', 100, 4);
+		}else
+		{
+			enemyEntity = new basicenemy (map, 15, obtain_data(1, seed) , obtain_data(2, seed), obtain_data(4, seed), obtain_data(3, seed));
+		}
+		LOGFILE << "call ended without complications, data retrieved from savefile" << endl ;
+	}		//se non sono presenti dati riguardanti il nemico, passa alla creazione da zero
+	else{*/
+		 if(j_e==NULL){
+			 b_e=basic_enemy_randomizer(e1,e2,e3);
+			 enemyEntity= b_e;
+		 }else
+			 enemyEntity= j_e;
+
+		 LOGFILE << "call yielded negative result, loading enemy with basic creation" << endl;
+	//}
     //prevents infinite money
     int count_money=0;
     //counter if enemy is dead
+
+
     bool dead_enemy=false;
+    if(enemyEntity->enemyOutput(2) <=0)
+    	dead_enemy=true;
+
+    int sus;
+
+    LOGFILE << "preparing to save data for new instance of gameFlow:-->" ;	//salva per aggiornare i dati all'entrata nel nuovo livello
+    sus=save_data(p, seed, game_scr, "savegame.txt", enemyEntity);
+    LOGFILE << "	automatic savegame complete. Enemy type: " << (char)obtain_data(4, seed) << endl ;
+
+    if(sus!=-1){
+    	LOGFILE <<"process ended without any error with status = " << sus << endl;;
+    }else{
+    	LOGFILE << "process ended with error, code = " << sus << endl;
+    }
+
 	do{
-        //brak if life below 0 or if player is prepared to go to next lvl
+        //brak if life below 0 or if player is prepared to go to next lvl or previous
         if(p->life<=0 || p->playeroutput(1)>116 || (p->playeroutput(1)<4 && !first_lvl))
             break;
 
@@ -303,55 +362,64 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
 		wrefresh(map);
 
         //prevents having conflicts between savings
-        remove("savegame.txt");
+        //remove("savegame.txt");
 
         //exit if you press "Esc"
 	}while(p->move()!=27);
 
+	/*int sadness = save_data(p, seed, game_scr, "savegame.txt","b_e", b_e);
+	LOGFILE << "end of action savegame result = " << sadness << endl;
+*/
     //entrance in new level
     if(p->playeroutput(1)>=116){
         clear();
         refresh();
         //reward for passing lvl
         game_scr+=100;
+        int kek=0;
         int seed_generated=map_randomizer(map1,map2,map3,map4,map5,map6,map7,
                                                map8,map9,map10,seed,true);
         WINDOW* new_map = map_generator(map1,map2,map3,map4,map5,map6,
                                         map7,map8,map9,map10,seed_generated,false);
-        if (j_e==NULL)
-        	{
-        		save_data(p, seed_generated, game_scr, "savegame.txt","b_e", b_e);
-        	}else
-        	{
-        		save_data(p, seed_generated, game_scr, "savegame.txt","j_e", j_e);
-        	}
+        LOGFILE << "preparing to save data for new level entrance:-->" ;
+
+        kek=save_data(p, seed_generated, game_scr, "savegame.txt", enemyEntity);
+        LOGFILE << "	automatic savegame complete (b_e)" << endl;
+
+        if(kek!=-1){
+        	LOGFILE << "successful operation" << endl;
+        }else
+        	LOGFILE << "operation failed and returned error code " << kek << endl;
+
+        //DEVNOTE
+        /*
+         * per qualche ragione, mettere qualunque istruzione fuori dall'if soprastante, prima dell'avvio di gameflow, rompe la creazione della mappa
+         * la mappa creata è quella corretta, difatti mettendo in pausa e cliccando resume, tutto torna come dovrebbe essere, eppure, eccoci qua
+         * non ho idea del perché succeda, ma oggi, nella sfida tra uomo e macchina, ha vinto la macchina
+         */
         game_flow(y_scr,x_scr,new_map,box,map1,map2,map3,map4,map5,
                     map6,map7,map8,map9,map10,seed_generated,true,false,false);
         endwin();
         return;
     }
 
-    //entrance last level
-    if(p->playeroutput(1)<4 && !first_lvl){
-        clear();
-        refresh();
+    //entrance in previous level
+    if(p->playeroutput(1) < 4 && !first_lvl)
+    {
+    	clear();
+    	refresh();
         if(seed==1)
             seed=10;
         else    
             seed=seed-1;
         WINDOW* n_map = map_generator(map1,map2,map3,map4,map5,map6,
                                             map7,map8,map9,map10,seed,false);
-        if (j_e==NULL)
-        	{
-        		save_data(p, seed, game_scr, "savegame.txt","b_e", b_e);
-        	}else
-        	{
-        		save_data(p, seed, game_scr, "savegame.txt","j_e", j_e);
-        	}
+    		save_data(p, seed, game_scr, "savegame.txt", enemyEntity);
+
             game_flow(y_scr,x_scr,n_map,box,map1,map2,map3,map4,map5,
                         map6,map7,map8,map9,map10,seed,false,true,first_lvl);
-            endwin();
-            return;
+    	endwin();
+    	return;
     }
 
     //death of player
@@ -361,6 +429,8 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
         death_screen(box,y_scr,x_scr,map1,map2,map3,map4,map5,map6,map7,
                         map8,map9,map10,seed);
         remove("savegame.txt");
+        LOGFILE << "player death, removing savegame.txt" << endl;
+        LOGFILE.close();
         endwin();
         return;
     }
@@ -373,44 +443,43 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
 
     MENU menu(y_scr/2,x_scr/2,y_scr/4,x_scr/4,v1,v2,v3,v4);
 
-    char v5[20], v6[50], v7[50], v8[50], v9[50], v10[20], v1_power[50], v2_power[50];
+    char v5[20], v6[20], v7[20], v8[20], v9[50], v10[50], v1_power[50], v2_power[50];
         strcpy(v5,"Market");
         strcpy(v6,"Health boost 80$+");
         strcpy(v7,"Jump boost 50$+");
         strcpy(v8,"Magic Potion 120$+");
         strcpy(v9,"Artifact 180$+");
         strcpy(v10,"Return to the game");
-    
-    //upgrade randomized
-    int upgrade_rand=rand()%3;
-    if(upgrade_rand%2==0)
-        strcpy(v1_power,v6);
-    else
-        strcpy(v1_power,v8);
-    
-    if(upgrade_rand==1)
-        strcpy(v2_power,v9);
-    else
-        strcpy(v2_power,v7);
 
-    MARKET market(y_scr/2,x_scr/4,y_scr/4,x_scr/4,v5,v1_power,v2_power,v10);
+        //upgrade randomized
+        int upgrade_rand=rand()%3;
+        if(upgrade_rand%2==0)
+        	strcpy(v1_power,v6);
+        else
+        	strcpy(v1_power,v8);
+
+        if(upgrade_rand==1)
+        	strcpy(v2_power,v9);
+        else
+        	strcpy(v2_power,v7);
+
+        MARKET market(y_scr/2,x_scr/4,y_scr/4,x_scr/4,v5,v1_power,v2_power,v10);
 
         clear();
         refresh();
 
-    int cx=menu.choice();
+        int cx=menu.choice();
     if(cx==1){
             clear();
             refresh();
-                int kek;
-                if (j_e==NULL)
-                {
-                	kek=save_data(p, seed, game_scr, "savegame.txt","b_e", b_e);
-                }else
-                {
-                	kek=save_data(p, seed, game_scr, "savegame.txt","j_e", j_e);
-                }
-            if(kek==1){
+            int kek;
+            LOGFILE << "preparing to save data for resume:-->" ;
+
+            kek=save_data(p, seed, game_scr, "savegame.txt", enemyEntity);
+            LOGFILE << "	automatic save complete (b_e) " << endl;
+
+            LOGFILE << "operation yielded result: " << kek<< endl;
+            if(kek!=-1){
                 clear();
                 mvprintw(0, 0, "loading");
                 mvprintw(1, 0, "press a key to continue");
@@ -422,6 +491,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 clear();
                 mvprintw(0, 0, "error in load screen ");
                 mvprintw(1, 0, "press a key to continue");
+                LOGFILE << "error during resume operation, code: " << kek;
                 refresh();
                 getch();
                 clear();
@@ -434,26 +504,25 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
             endwin();
             return;
     }else if(cx==2){
-            //market access
-            market.draw_market();
-            int mx=market.choice();
-            if(mx==1){
-                //upgrade randomized
-                if(upgrade_rand%2==0)
-                    buy_Health(p);
-                else
-                    buy_MagicPotion(p);
-                clear();
-                refresh();
-                int kek;
-                if (j_e==NULL)
-                {
-                	kek=save_data(p, seed, game_scr, "savegame.txt","b_e", b_e);
-                }else
-                {
-                	kek=save_data(p, seed, game_scr, "savegame.txt","j_e", j_e);
-                }
-                if(kek==1){
+    	//market access
+    	market.draw_market();
+    	int mx=market.choice();
+    	if(mx==1){
+    		//upgrade randomized
+    		if(upgrade_rand%2==0)
+    			buy_Health(p);
+    		else
+    			buy_MagicPotion(p);
+    		clear();
+    		refresh();
+    		int kek;
+    		LOGFILE << "preparing to save data for access to market:-->" ;
+
+    		kek=save_data(p, seed, game_scr, "savegame.txt", enemyEntity);
+
+    		LOGFILE << "operation yielded result: " << kek<< endl;
+
+                if(kek!=1){
                 	clear();
                 	mvprintw(0, 0, "loading");
                     mvprintw(1, 0, "press a key to continue");
@@ -465,6 +534,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 	clear();
                 	mvprintw(0, 0, "error in load screen ");
                     mvprintw(1, 0, "press a key to continue");
+                    LOGFILE << "error during health purchase, code: " << kek;
                 	refresh();
                 	getch();
                 	clear();
@@ -477,22 +547,21 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 endwin();
                 return;
             }else if(mx==2){
-                //upgrade randomized
-                if(upgrade_rand==1)
-                    game_scr+=buy_Artifact(p);
-                else
-                    buy_Jumpboost(p);
-                clear();
-                refresh();
+            	//upgrade randomized
+            	if(upgrade_rand==1)
+            		game_scr+=buy_Artifact(p);
+            	else
+            		buy_Jumpboost(p);
+            	clear();
+            	refresh();
                 int kek;
-                if (j_e==NULL)
-                {
-                	kek=save_data(p, seed, game_scr, "savegame.txt","b_e", b_e);
-                }else
-                {
-                	kek=save_data(p, seed, game_scr, "savegame.txt","j_e", j_e);
-                }
-                if(kek==1){
+                LOGFILE << "preparing to save data for access to market:-->" ;
+
+                kek=save_data(p, seed, game_scr, "savegame.txt", enemyEntity);
+
+                LOGFILE << "operation yielded result: " << kek<< endl;
+
+                if(kek!=1){
                 	clear();
                     mvprintw(0, 0, "loading");
                     mvprintw(1, 0, "press a key to continue");
@@ -504,6 +573,7 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 	clear();
                 	mvprintw(0, 0, "error in load screen ");
                     mvprintw(1, 0, "press a key to continue");
+                    LOGFILE << "error during jumpboost purchase, code: " << kek;
                 	refresh();
                 	getch();
                 	clear();
@@ -523,14 +593,12 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                  *
                  */
                 int kek;
-                if (j_e==NULL)
-                {
-                	kek=save_data(p, seed, game_scr, "savegame.txt","b_e", b_e);
-                }else
-                {
-                	kek=save_data(p, seed, game_scr, "savegame.txt","j_e", j_e);
-                }
-                if(kek==1){
+                LOGFILE << "preparing to save data for resume function:-->" ;
+
+                	kek=save_data(p, seed, game_scr, "savegame.txt", enemyEntity);
+
+                LOGFILE << "	operation yielded result:  " << kek << endl;
+                if(kek!=1){
             		clear();
             		mvprintw(0, 0, "loading");
                     mvprintw(1, 0, "press a key to continue");
@@ -542,7 +610,8 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
                 	clear();
             		mvprintw(0, 0, "error in load screen ");
                     mvprintw(1, 0, "press a key to continue");
-            		refresh();
+                    LOGFILE << "error during resume, code: " << kek;
+                    refresh();
             	    getch();
             	    clear();
             	    refresh();
@@ -557,13 +626,12 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
     }else if(cx==3){
         //save game
         int kek;
-        if (j_e==NULL)
-        {
-        	kek=save_data(p, seed, game_scr, "savegame.txt","b_e", b_e);
-        }else
-        {
-        	kek=save_data(p, seed, game_scr, "savegame.txt","j_e", j_e);
-        }
+        LOGFILE << "preparing to save data throught savedata manual command: -->" ;
+
+        	kek=save_data(p, seed, game_scr, "savegame.txt", enemyEntity);
+
+        LOGFILE << "operation yielded result: "<< kek << endl;
+
     	if(kek!=-1)
     	{
     		clear();
@@ -576,10 +644,12 @@ void game_flow(int y_scr, int x_scr, WINDOW* map, class BOX box,
     		clear();
     		mvprintw(0, 0, "game could not be saved, oopsie :) ");
             mvprintw(1, 0, "press a key to exit");
+            LOGFILE << "error during savegame, code: " << kek;
     		refresh();
     	    getch();
     	}
         endwin();
+        LOGFILE.close();
         return;
     }
 }

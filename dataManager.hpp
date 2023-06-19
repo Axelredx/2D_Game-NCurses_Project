@@ -10,7 +10,7 @@
 using namespace std;
 
 
-int save_data(player* P, int Seed, int game_scr, string fileName, string enemyID, basicenemy* E);
+int save_data(player* P, int Seed, int game_scr, string fileName, basicenemy* E);
 	/*
 	 * MEMO: savegame structure as follows (WIP)
 	 * Line1: yloc (code 0)
@@ -32,4 +32,6 @@ void changeData_basic(int itemNum, string content);
 
 void copyFile(string oldFileName, string newFileName);
 
-int obtain_data(int kek);
+int obtain_data(int kek, int map=-1);
+
+int newEnemyDataSave (ofstream &mainFile, ifstream &supportFile,  int seed, basicenemy* E);

@@ -10,8 +10,9 @@ bool player::isterrain(char t){
 		return false;
 }
 
-bool player::bulletterrain(char t){
-	if(t=='#' || t=='-' || t=='|' || t=='e' || t=='{' || t=='[' || t==']' || t=='}' || t=='(' || t==')')
+bool player::bulletterrain(char t){if(t=='#' || t=='-' || t=='|' || t=='e' || t=='E' || t=='j' 
+			|| t=='J' || t=='&' || t=='<' || t=='{' || t=='[' || t==']' || t=='}' || t=='(' 
+			|| t==')')
 		return true;
 	else
 		return false;
@@ -158,7 +159,8 @@ void player::mvdown(){
 }
 
 void player::mvright(){
-	if(mvwinch(curwin, yLoc, xLoc+1)=='#' || mvwinch(curwin, yLoc, xLoc+1)=='|' || isenemy(mvwinch(curwin, yLoc, xLoc+1))==true)
+	if(mvwinch(curwin, yLoc, xLoc+1)=='#' || mvwinch(curwin, yLoc, xLoc+1)=='|' || mvwinch(curwin, yLoc, xLoc-1)=='[' || mvwinch(curwin, yLoc, xLoc-1)==']' 
+	|| mvwinch(curwin, yLoc, xLoc-1)=='{' || mvwinch(curwin, yLoc, xLoc-1)=='}'||  isenemy(mvwinch(curwin, yLoc, xLoc+1))==true)
 		return;
 	if(mvwinch(curwin, yLoc, xLoc+1)=='-')
 		stairsup();
@@ -169,7 +171,8 @@ void player::mvright(){
 }
 
 void player::mvleft(){
-	if(mvwinch(curwin, yLoc, xLoc-1)=='#' || mvwinch(curwin, yLoc, xLoc-1)=='|' || isenemy(mvwinch(curwin, yLoc, xLoc-1))==true)
+	if(mvwinch(curwin, yLoc, xLoc-1)=='#' || mvwinch(curwin, yLoc, xLoc-1)=='|'|| mvwinch(curwin, yLoc, xLoc-1)=='[' || mvwinch(curwin, yLoc, xLoc-1)==']' 
+	|| mvwinch(curwin, yLoc, xLoc-1)=='{' || mvwinch(curwin, yLoc, xLoc-1)=='}'|| isenemy(mvwinch(curwin, yLoc, xLoc-1))==true)
 		return;
 	if(mvwinch(curwin, yLoc, xLoc-1)=='-')
 		stairsup();
@@ -350,7 +353,6 @@ int player::leftright(){
 
 	//Per chiarezza: 32 = barra spaziatrice
 	case 32:
-		if(s==false && j==false)
 			shoot();
 		break;
 	default:
