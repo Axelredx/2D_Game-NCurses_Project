@@ -6,8 +6,9 @@ NCurses librarys for C++
 g++ compiler
 MakeFile extencion
 
-## Usage
 ```
+## Usage
+
 (linux)
 $ make all
 $ ./main
