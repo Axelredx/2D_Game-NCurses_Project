@@ -1,7 +1,10 @@
 A simple 2D platform game written in C++ language using NCurses library
 
 ## Requirements
+```
 NCurses librarys for C++
+g++ compiler
+MakeFile extencion
 
 ## Usage
 ```
