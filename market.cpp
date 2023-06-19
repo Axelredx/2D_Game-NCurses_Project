@@ -1,6 +1,5 @@
 #include "market.hpp"
 
-
 bool check_Currency(int price, player* player){
     if(price > (player->money))
         return true;
@@ -36,6 +35,6 @@ int buy_Artifact(player* player){
         player->life=player->life+2;
         player->money=(player->money)-(player->Artifact_Price);
         player->Artifact_Price=player->Artifact_Price+50;
-        return 150;
     }
+    return 150;
 }
