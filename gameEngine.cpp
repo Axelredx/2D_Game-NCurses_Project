@@ -37,10 +37,11 @@ void death_screen(class BOX box, int y_scr, int x_scr, class MAP map1, class MAP
     mvwprintw(fin,(y_scr/4)+2,(x_scr/4)-10," press a key to exit");
     refresh();
     wrefresh(fin);
+    usleep(3000);
     getch();
     clear();
-    return;
     LOGFILE << "DEATHSCREEN PROCESS ENDED WITHOUT PROBLEMS" << endl;
+    return;
 }
 
 int map_randomizer(class MAP map1, class MAP map2, class MAP map3, class MAP map4,
