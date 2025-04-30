@@ -1,22 +1,18 @@
-A simple 2D platform game written in C++ language using NCurses library
+A simple 2D terminal platform game written in C++, using NCurses library (linux native).
 
 ## Requirements
 ```
-* NCurses librarys for C++
+* NCurses librarys for C++ 
 * g++ compiler
-* MakeFile extencion
+* MakeFile runner
 
 ```
 ## Usage
+```
+* $ make all
+* $ ./main
 
-* (linux)
-    $ make all
-    $ ./main
-
-* (windows)
-    $ make all
-    $ main.exe
-
+```
 ## Controls
 ```
 * Move LEFT/RIGHT/DOWN- KEY_LEFT/KEY_RIGHT/KEY_DOWN
